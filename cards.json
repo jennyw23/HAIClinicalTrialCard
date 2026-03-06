@@ -1,0 +1,372 @@
+[
+  {
+    "paper_id": 1,
+    "paper_title": "Generative AI at Work",
+    "authors": ["Erik Brynjolfsson", "Danielle Li", "Lindsey R. Raymond"],
+    "year": 2023,
+    "study_type": "field experiment",
+    "ai_model": {
+      "provider": "OpenAI",
+      "model_name": "GPT-3",
+      "model_version": null,
+      "fine_tuned": true,
+      "access_method": "OpenAI API via custom internal interface",
+      "prompting_or_config": null,
+      "benchmarks_reported": false,
+      "key_parameters": null
+    },
+    "human_participants": {
+      "sample_size": 5172,
+      "population": "Customer support agents",
+      "expertise_level": "Low",
+      "domain_expertise": "Customer service",
+      "ai_familiarity": "Likely low (pre-ChatGPT era)",
+      "training_provided": "Standard system rollout",
+      "data_collection_period": null
+    },
+    "interaction_task": {
+      "task_domain": "Customer service",
+      "task_description": "Customer support chat conversations",
+      "interface": "Custom chat interface with AI suggestions",
+      "ai_role": "assistive",
+      "experimental_conditions": ["No AI", "AI assistance"],
+      "primary_outcomes": ["Resolutions per hour", "Average handle time", "Resolution rate", "Net Promoter Score"],
+      "main_effects_summary": "Approximately 15% increase in resolutions per hour; largest gains for novice workers",
+      "effect_direction": "positive",
+      "prompting_strategy": null
+    }
+  },
+  {
+    "paper_id": 2,
+    "paper_title": "The Impact of AI on Developer Productivity: Evidence from GitHub Copilot",
+    "authors": ["Shuai Peng", "Evarist Fomichev", "Jialiang Li", "Michael L. Littman", "David Molitor", "Arvind Narayanan"],
+    "year": 2023,
+    "study_type": "lab experiment",
+    "ai_model": {
+      "provider": "GitHub / OpenAI",
+      "model_name": "Codex (GitHub Copilot)",
+      "model_version": null,
+      "fine_tuned": true,
+      "access_method": "GitHub Copilot plugin in VS Code",
+      "prompting_or_config": "Default Copilot configuration",
+      "benchmarks_reported": false,
+      "key_parameters": null
+    },
+    "human_participants": {
+      "sample_size": 95,
+      "population": "Software developers",
+      "expertise_level": "High",
+      "domain_expertise": "Programming (Python)",
+      "ai_familiarity": "Mixed; Copilot was novel at time of study",
+      "training_provided": "Brief onboarding to Copilot usage",
+      "data_collection_period": null
+    },
+    "interaction_task": {
+      "task_domain": "Software development",
+      "task_description": "Implementing a Python HTTP server from scratch",
+      "interface": "VS Code with Copilot enabled",
+      "ai_role": "assistive",
+      "experimental_conditions": ["No Copilot", "Copilot enabled"],
+      "primary_outcomes": ["Task completion time", "Task success rate"],
+      "main_effects_summary": "Copilot users completed tasks approximately 55% faster on average",
+      "effect_direction": "positive",
+      "prompting_strategy": null
+    }
+  },
+  {
+    "paper_id": 3,
+    "paper_title": "Experimental Evidence on the Productivity Effects of Generative Artificial Intelligence",
+    "authors": ["Shakked Noy", "Whitney Zhang"],
+    "year": 2023,
+    "study_type": "lab experiment",
+    "ai_model": {
+      "provider": "OpenAI",
+      "model_name": "GPT-3.5",
+      "model_version": null,
+      "fine_tuned": false,
+      "access_method": "ChatGPT web interface",
+      "prompting_or_config": "Default ChatGPT settings; no special system prompt",
+      "benchmarks_reported": false,
+      "key_parameters": null
+    },
+    "human_participants": {
+      "sample_size": 453,
+      "population": "College-educated professionals",
+      "expertise_level": "Moderate",
+      "domain_expertise": "Writing and analytical tasks",
+      "ai_familiarity": "Low (early ChatGPT period)",
+      "training_provided": "Brief instruction that AI was available",
+      "data_collection_period": null
+    },
+    "interaction_task": {
+      "task_domain": "Writing and knowledge work",
+      "task_description": "Business writing tasks (memos, press releases, short reports)",
+      "interface": "ChatGPT web interface",
+      "ai_role": "assistive",
+      "experimental_conditions": ["No AI", "ChatGPT access"],
+      "primary_outcomes": ["Task completion time", "Output quality ratings"],
+      "main_effects_summary": "AI reduced completion time by ~40% and increased quality ratings by ~18%; skill-leveling effect",
+      "effect_direction": "positive",
+      "prompting_strategy": "Zero-shot (no guidance provided)"
+    }
+  },
+  {
+    "paper_id": 4,
+    "paper_title": "Navigating the Jagged Technological Frontier: Field Experimental Evidence of the Effects of AI on Knowledge Worker Productivity and Quality",
+    "authors": ["Fabrizio Dell'Acqua", "Edward McFowland III", "Ethan R. Mollick", "Hila Lifshitz-Assaf", "Katherine Kellogg", "Saran Rajendran", "Lisa Krayer", "Francois Candelon", "Karim R. Lakhani"],
+    "year": 2023,
+    "study_type": "field experiment",
+    "ai_model": {
+      "provider": "OpenAI",
+      "model_name": "GPT-4",
+      "model_version": "April 2023 release",
+      "fine_tuned": false,
+      "access_method": "Company platform via OpenAI API",
+      "prompting_or_config": "Default system prompt and temperature settings",
+      "benchmarks_reported": true,
+      "key_parameters": null
+    },
+    "human_participants": {
+      "sample_size": 758,
+      "population": "Management consultants at a global consulting firm",
+      "expertise_level": "High",
+      "domain_expertise": "Strategy and business analysis",
+      "ai_familiarity": "Low to moderate",
+      "training_provided": "Brief orientation session",
+      "data_collection_period": null
+    },
+    "interaction_task": {
+      "task_domain": "Knowledge work",
+      "task_description": "Creative and analytical consulting tasks (business cases, market analysis)",
+      "interface": "Custom company interface built on OpenAI API",
+      "ai_role": "assistive",
+      "experimental_conditions": ["No AI", "AI only", "AI + process overview"],
+      "primary_outcomes": ["Output quality scores", "Task completion rate", "Speed"],
+      "main_effects_summary": "Large quality gains for tasks inside the AI frontier; no gains or losses outside the frontier (automation bias risk)",
+      "effect_direction": "mixed",
+      "prompting_strategy": null
+    }
+  },
+  {
+    "paper_id": 5,
+    "paper_title": "The Uneven Impact of Generative AI on Entrepreneurial Performance",
+    "authors": ["Alex Otis", "Ryan Clarke", "David Holtz", "Ramana Nanda"],
+    "year": 2024,
+    "study_type": "field experiment",
+    "ai_model": {
+      "provider": "OpenAI",
+      "model_name": "GPT-4",
+      "model_version": null,
+      "fine_tuned": false,
+      "access_method": "Chat-based interface",
+      "prompting_or_config": "Structured prompts provided to participants",
+      "benchmarks_reported": false,
+      "key_parameters": null
+    },
+    "human_participants": {
+      "sample_size": 326,
+      "population": "Entrepreneurs and startup founders",
+      "expertise_level": "Heterogeneous",
+      "domain_expertise": "Business ideation and strategy",
+      "ai_familiarity": "Low to moderate",
+      "training_provided": "Prompting guidance provided",
+      "data_collection_period": null
+    },
+    "interaction_task": {
+      "task_domain": "Entrepreneurship",
+      "task_description": "Business idea generation and pitch refinement",
+      "interface": "Chat interface",
+      "ai_role": "assistive",
+      "experimental_conditions": ["No AI", "GPT-4 assistance"],
+      "primary_outcomes": ["Expert-rated idea quality", "Novelty scores"],
+      "main_effects_summary": "Average quality gains but increased variance; weaker participants benefited more, top performers saw smaller gains",
+      "effect_direction": "mixed",
+      "prompting_strategy": "Structured prompts"
+    }
+  },
+  {
+    "paper_id": 6,
+    "paper_title": "The Effects of Generative AI on High-Skilled Work: Evidence from Three Field Experiments with Software Developers",
+    "authors": ["Ruoxi Cui", "Sida Peng", "Juntao Wang", "Daniel Rock"],
+    "year": 2024,
+    "study_type": "field experiment",
+    "ai_model": {
+      "provider": "GitHub / OpenAI",
+      "model_name": "GitHub Copilot (Codex-based)",
+      "model_version": null,
+      "fine_tuned": true,
+      "access_method": "Copilot integrated into developers' coding environments",
+      "prompting_or_config": "Default Copilot configuration",
+      "benchmarks_reported": false,
+      "key_parameters": null
+    },
+    "human_participants": {
+      "sample_size": null,
+      "population": "Professional software developers across three companies",
+      "expertise_level": "High",
+      "domain_expertise": "Software engineering",
+      "ai_familiarity": "Low to moderate",
+      "training_provided": "Minimal onboarding",
+      "data_collection_period": null
+    },
+    "interaction_task": {
+      "task_domain": "Software development",
+      "task_description": "Real-world programming tasks in professional settings across three field experiments",
+      "interface": "Code editor (VS Code / JetBrains) with Copilot enabled",
+      "ai_role": "assistive",
+      "experimental_conditions": ["No Copilot", "Copilot enabled"],
+      "primary_outcomes": ["Developer productivity", "Code quality", "Lines of code"],
+      "main_effects_summary": "Significant productivity gains observed; heterogeneous effects on code quality depending on task type",
+      "effect_direction": "mixed",
+      "prompting_strategy": null
+    }
+  },
+  {
+    "paper_id": 7,
+    "paper_title": "Large Language Models, Small Labor Market Effects",
+    "authors": ["Anders Humlum", "Emilie Vestergaard"],
+    "year": 2024,
+    "study_type": "quasi-experimental",
+    "ai_model": {
+      "provider": "Multiple",
+      "model_name": "Large Language Models (primarily ChatGPT)",
+      "model_version": null,
+      "fine_tuned": false,
+      "access_method": "Publicly available AI tools (self-selected)",
+      "prompting_or_config": "User-driven, uncontrolled",
+      "benchmarks_reported": false,
+      "key_parameters": null
+    },
+    "human_participants": {
+      "sample_size": null,
+      "population": "Workers across multiple occupations in the Danish labor market",
+      "expertise_level": "Heterogeneous",
+      "domain_expertise": "Varies by occupation",
+      "ai_familiarity": "Increasing over study period",
+      "training_provided": "None (naturalistic study)",
+      "data_collection_period": "2022-2024"
+    },
+    "interaction_task": {
+      "task_domain": "Labor market outcomes",
+      "task_description": "Real-world use of LLMs across diverse occupations in naturalistic settings",
+      "interface": "Self-chosen tools and interfaces",
+      "ai_role": "assistive",
+      "experimental_conditions": ["Pre-LLM diffusion period", "Post-LLM diffusion period"],
+      "primary_outcomes": ["Wages", "Hours worked", "Employment status"],
+      "main_effects_summary": "No large or statistically significant labor market effects detected despite widespread AI adoption",
+      "effect_direction": "negative",
+      "prompting_strategy": null
+    }
+  },
+  {
+    "paper_id": 8,
+    "paper_title": "GPT-4 Assistance for Improvement of Physician Performance on Patient Care Tasks: A Randomized Controlled Trial",
+    "authors": ["Eric Goh", "Jasmine Gallo", "James Hom", "Lisa Lieneck", "Robert Gallo", "Jason Rotenberg", "Anant Naik", "Jason Lazar", "Anoop Bhatt"],
+    "year": 2024,
+    "study_type": "randomized controlled trial",
+    "ai_model": {
+      "provider": "OpenAI",
+      "model_name": "GPT-4",
+      "model_version": null,
+      "fine_tuned": false,
+      "access_method": "Web-based chat interface",
+      "prompting_or_config": "Standardized prompts provided to all participants",
+      "benchmarks_reported": false,
+      "key_parameters": null
+    },
+    "human_participants": {
+      "sample_size": 48,
+      "population": "Practicing physicians across multiple specialties",
+      "expertise_level": "High",
+      "domain_expertise": "Clinical medicine",
+      "ai_familiarity": "Low to moderate",
+      "training_provided": "Brief instructions on tool use",
+      "data_collection_period": null
+    },
+    "interaction_task": {
+      "task_domain": "Healthcare",
+      "task_description": "Clinical decision-making tasks including diagnosis, treatment planning, and patient management",
+      "interface": "Chat-based web interface",
+      "ai_role": "assistive",
+      "experimental_conditions": ["No AI (physician only)", "GPT-4 assistance"],
+      "primary_outcomes": ["Clinical decision quality", "Diagnostic accuracy"],
+      "main_effects_summary": "GPT-4 significantly improved physician performance on patient care tasks across multiple clinical domains",
+      "effect_direction": "positive",
+      "prompting_strategy": "Standardized prompts (provided to participants)"
+    }
+  },
+  {
+    "paper_id": 9,
+    "paper_title": "Generative AI without Guardrails Can Harm Learning: Evidence from High School Mathematics",
+    "authors": ["Hamsa Bastani", "Osbert Bastani", "Alp Sungu", "Haosen Ge", "Ozge Kabakci", "Rei Mariman"],
+    "year": 2024,
+    "study_type": "randomized controlled trial",
+    "ai_model": {
+      "provider": "OpenAI",
+      "model_name": "GPT-4",
+      "model_version": null,
+      "fine_tuned": false,
+      "access_method": "Custom chat-based tutoring interface",
+      "prompting_or_config": "Unguided vs. scaffolded system prompts restricting answer-giving",
+      "benchmarks_reported": false,
+      "key_parameters": "System prompt controlled whether AI could give direct answers"
+    },
+    "human_participants": {
+      "sample_size": 1000,
+      "population": "High school students",
+      "expertise_level": "Low",
+      "domain_expertise": "Mathematics",
+      "ai_familiarity": "Low",
+      "training_provided": "Minimal; access to the tool was provided",
+      "data_collection_period": null
+    },
+    "interaction_task": {
+      "task_domain": "Education",
+      "task_description": "Solving high school mathematics problem sets with AI tutor assistance",
+      "interface": "Chat-based AI tutoring interface",
+      "ai_role": "assistive",
+      "experimental_conditions": ["No AI", "AI without guardrails", "AI with guardrails"],
+      "primary_outcomes": ["Post-test performance", "Learning gains", "Homework completion"],
+      "main_effects_summary": "Unguided AI harmed downstream learning outcomes; guardrails (restricting direct answers) mitigated negative effects",
+      "effect_direction": "mixed",
+      "prompting_strategy": "Unguided vs. scaffolded (system prompt varied by condition)"
+    }
+  },
+  {
+    "paper_id": 10,
+    "paper_title": "Collaborating with AI Agents: Field Experiments on Teamwork, Productivity, and Performance",
+    "authors": ["Harang Ju", "Sinan Aral"],
+    "year": 2024,
+    "study_type": "field experiment",
+    "ai_model": {
+      "provider": "OpenAI",
+      "model_name": "GPT-4-based agents",
+      "model_version": null,
+      "fine_tuned": false,
+      "access_method": "Agent-based collaboration platform",
+      "prompting_or_config": "Role-specific agent prompts assigned per team function",
+      "benchmarks_reported": false,
+      "key_parameters": "Agents assigned specific team roles via system prompts"
+    },
+    "human_participants": {
+      "sample_size": 776,
+      "population": "Knowledge workers in organizational settings",
+      "expertise_level": "Moderate",
+      "domain_expertise": "Collaborative problem-solving",
+      "ai_familiarity": "Low to moderate",
+      "training_provided": "Task instructions and platform onboarding",
+      "data_collection_period": null
+    },
+    "interaction_task": {
+      "task_domain": "Teamwork and collaboration",
+      "task_description": "Structured team-based problem-solving tasks in organizational settings",
+      "interface": "Collaborative platform with embedded AI agents",
+      "ai_role": "semi-autonomous",
+      "experimental_conditions": ["Human-only teams", "Human-AI teams"],
+      "primary_outcomes": ["Team performance score", "Task productivity", "Collaboration quality"],
+      "main_effects_summary": "AI agents improved average team performance but altered communication dynamics and reduced human-human interaction",
+      "effect_direction": "positive",
+      "prompting_strategy": "Role-specific agent prompts"
+    }
+  }
+]

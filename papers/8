@@ -1,0 +1,97 @@
+AI Clinical Trial Card: GPT-4 Assistance for Improvement of Physician Performance on Patient Care Tasks: A Randomized Controlled Trial
+
+Authors: Eric Goh et al.
+
+AI Model Details
+
+Provider: OpenAI
+
+Model Name and Version:
+
+GPT-4 (exact version not specified)
+
+Access Method:
+
+GPT-4 accessed through a web-based chat interface
+
+Participants could query the model during task completion
+
+Fine-tuning:
+
+No fine-tuning reported
+
+Model used in a general-purpose configuration
+
+Prompting / Configuration Parameters:
+
+Participants were given standardized prompts describing how to consult GPT-4
+
+No control over temperature or decoding parameters reported
+
+Human Participant Profile
+
+Sample Size:
+
+48 physicians
+
+Population / Expertise:
+
+Practicing physicians
+
+Highly trained domain experts with clinical experience
+
+Domain Expertise:
+
+Patient care and medical decision-making
+
+AI / LLM Familiarity:
+
+Not extensively characterized
+
+Likely low-to-moderate familiarity given early GPT-4 adoption
+
+Training / Onboarding:
+
+Brief instructions on how to interact with the AI system
+
+Interaction and Task Design
+
+Task Description:
+
+Physicians completed patient care tasks, including clinical reasoning and treatment decisions
+
+Tasks designed to reflect realistic diagnostic and management scenarios
+
+Interface:
+
+Chat-based interface for interacting with GPT-4
+
+AI Role / Degree of Autonomy:
+
+Assistive
+
+GPT-4 provided recommendations and reasoning support; final decisions remained with physicians
+
+Experimental Conditions:
+
+Control: no AI assistance
+
+Treatment: GPT-4 assistance
+
+Primary Outcome Measures:
+
+Quality of clinical decisions, assessed using expert-defined criteria
+
+Main Effects:
+
+GPT-4 assistance significantly improved physician performance
+
+Improvements observed despite participants’ high baseline expertise
+
+Notes on Interpretation
+
+Demonstrates that generative AI can meaningfully support expert decision-making in high-stakes domains
+
+Effects depend on careful task framing and controlled use
+
+Does not address downstream impacts on patient outcomes or long-term learning

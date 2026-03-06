@@ -1,0 +1,72 @@
+AI Clinical Trial Card: Experimental Evidence on the Productivity Effects of Generative Artificial Intelligence
+
+Authors: Shakked Noy, Whitney Zhang
+
+AI Model Details
+
+Provider: OpenAI
+Model Name and Version: GPT-3.5 (via ChatGPT; exact backend version not specified)
+
+Access Method:
+
+Participants interacted with ChatGPT through the standard web interface
+
+No custom integration or task-specific interface
+
+Fine-tuning / Configuration:
+
+No fine-tuning
+
+Default ChatGPT system behavior; temperature and prompts not controlled
+
+Human Participant Profile
+
+Sample Size: 453
+
+Population / Expertise:
+
+College-educated professionals recruited online
+
+Tasks designed to reflect general-purpose knowledge work, not domain-specific expert labor
+
+AI Familiarity:
+
+Study conducted shortly after ChatGPT’s release
+
+Most participants likely had limited prior exposure
+
+Interaction and Task Design
+
+Task Description:
+
+Writing tasks such as business memos, press releases, and short analytical texts
+
+AI Role:
+
+Assistive writing support
+
+Experimental Conditions:
+
+Control (no AI) vs. ChatGPT access
+
+Outcomes:
+
+Time to completion
+
+Human-graded quality scores
+
+Main Effects:
+
+~40% reduction in completion time
+
+~18% increase in quality
+
+Larger gains for lower baseline performers
+
+Interpretation Notes
+
+Demonstrates strong productivity gains for generic writing tasks
+
+Relies on a frictionless chat-based workflow rather than embedded tools
+
+Results may differ for specialized or collaborative writing contexts

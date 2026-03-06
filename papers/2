@@ -1,0 +1,116 @@
+AI Clinical Trial Card: The Impact of AI on Developer Productivity: Evidence from GitHub Copilot
+
+Authors: Shuai Peng et al. (MIT / Microsoft Research)
+
+AI Model Details
+
+Provider: GitHub / OpenAI
+Model Name and Version: GitHub Copilot (based on OpenAI Codex; exact model version not specified)
+
+Access Method:
+
+GitHub Copilot integrated directly into the developer’s code editor (Visual Studio Code)
+
+Suggestions surfaced inline as developers typed code
+
+Fine-tuning:
+
+Yes. Copilot is built on Codex, a model fine-tuned on large-scale public code repositories
+
+No task-specific fine-tuning conducted for this experiment
+
+Prompting / Configuration Parameters:
+
+Default Copilot configuration
+
+No explicit control over temperature or decoding parameters reported
+
+Performance on Standard Benchmarks:
+
+Not reported in the paper
+
+The study treats Copilot as a deployed commercial system rather than benchmarking the underlying model
+
+Human Participant Profile
+
+Sample Size:
+
+95 participants
+
+Population / Expertise:
+
+Software developers recruited online
+
+Participants had prior programming experience and were capable of completing a non-trivial Python programming task
+
+Domain Expertise:
+
+Python programming
+
+Web server implementation
+
+AI / LLM Familiarity:
+
+Mixed and not deeply characterized
+
+Study conducted when GitHub Copilot was relatively new, so many participants were likely first-time or early users
+
+Training / Onboarding:
+
+Participants received brief instructions on how to use Copilot
+
+No extensive training period or prolonged exposure
+
+Interaction and Task Design
+
+Task Description:
+
+Participants were asked to implement a Python HTTP server that satisfied a set of functional requirements
+
+Task required writing working, executable code rather than answering conceptual questions
+
+Interface:
+
+Visual Studio Code IDE
+
+Copilot suggestions appeared inline and could be accepted, modified, or ignored
+
+AI Role / Degree of Autonomy:
+
+Assistive
+
+Copilot generated code suggestions, but humans retained full control over what code was accepted
+
+Experimental Conditions:
+
+Control: Copilot disabled
+
+Treatment: Copilot enabled
+
+Primary Outcome Measures:
+
+Task completion time
+
+Task success rate (whether the submitted code passed correctness checks)
+
+Main Effects:
+
+Developers using Copilot completed the task approximately 55% faster than those without Copilot
+
+Success rates were comparable across conditions, suggesting speed gains did not come at the cost of correctness
+
+Notes on Interpretation
+
+Results are strongly shaped by:
+
+A well-scoped, relatively short programming task
+
+Inline, low-friction AI assistance embedded directly in the coding environment
+
+Findings may not generalize to:
+
+Long-term software projects
+
+Tasks requiring deep architectural reasoning
+
+Developers with extensive prior Copilot experience

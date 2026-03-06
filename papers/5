@@ -1,0 +1,110 @@
+AI Clinical Trial Card: The Uneven Impact of Generative AI on Entrepreneurial Performance
+
+Authors: Alex Otis, Rembrand Koning, Sampsa Samila, and colleagues
+
+AI Model Details
+
+Provider: OpenAI
+Model Name and Version: GPT-4 (exact version not specified)
+
+Access Method:
+
+Chat-based interface provided to participants as part of the experimental platform
+
+Fine-tuning:
+
+No fine-tuning reported
+
+Model used in a general-purpose configuration
+
+Prompting / Configuration Parameters:
+
+Participants were given structured prompts to guide interaction with GPT-4
+
+No explicit reporting of temperature or decoding parameters
+
+Performance on Standard Benchmarks:
+
+Not reported
+
+Human Participant Profile
+
+Sample Size:
+
+Approximately 300+ participants (exact counts vary by task and condition)
+
+Population / Expertise:
+
+Entrepreneurs and startup founders
+
+Participants exhibited heterogeneous levels of experience and skill
+
+Domain Expertise:
+
+Business ideation, venture strategy, and entrepreneurial decision-making
+
+AI / LLM Familiarity:
+
+Likely low-to-moderate
+
+Study conducted during early diffusion of GPT-4 into professional settings
+
+Training / Onboarding:
+
+Participants received guidance on how to interact with the AI system
+
+Emphasis on using AI as a support tool rather than a replacement
+
+Interaction and Task Design
+
+Task Description:
+
+Entrepreneurial tasks such as:
+
+Generating business ideas
+
+Refining and improving venture concepts
+
+Interface:
+
+Chat-based interaction with GPT-4
+
+AI Role / Degree of Autonomy:
+
+Assistive
+
+AI provided suggestions, feedback, and alternative ideas; final decisions remained with participants
+
+Experimental Conditions:
+
+Control (no AI assistance)
+
+GPT-4 assistance
+
+Primary Outcome Measures:
+
+Expert-rated quality of entrepreneurial ideas
+
+Evaluations conducted by domain experts
+
+Main Effects:
+
+On average, access to GPT-4 improved entrepreneurial performance
+
+However, effects were highly uneven:
+
+Lower-performing participants benefited substantially
+
+High-performing participants saw smaller gains or, in some cases, performance declines
+
+Variance in outcomes increased under AI assistance
+
+Notes on Interpretation
+
+This paper is central for understanding distributional effects of generative AI
+
+Rather than uniformly raising performance, AI reshapes the performance distribution
+
+Results suggest that generative AI may act as a leveling technology in some contexts while potentially dampening differentiation among top performers
+
+Highlights the importance of examining who benefits, not just average treatment effects, in human–AI experiments

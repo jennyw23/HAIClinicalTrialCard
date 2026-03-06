@@ -1,0 +1,130 @@
+AI Clinical Trial Card: Navigating the Jagged Technological Frontier: Field Experimental Evidence of the Effects of AI on Knowledge Worker Productivity and Quality
+
+Authors: Fabrizio Dell’Acqua, Raffaella Sadun, Marco Tabellini, and colleagues
+
+AI Model Details
+
+Provider: OpenAI
+Model Name and Version: GPT-4 (version available via OpenAI API in late April 2023)
+
+Access Method:
+
+GPT-4 was accessed through a custom company platform developed by the firm
+
+The platform made API calls to OpenAI and surfaced model outputs in a controlled interface used by participants
+
+Fine-tuning:
+
+No fine-tuning reported
+
+Model used in an out-of-the-box configuration
+
+Prompting / Configuration Parameters:
+
+Default system prompt and default temperature
+
+Some experimental conditions provided participants with an overview of GPT-4’s strengths and limitations, but the underlying model configuration remained unchanged
+
+Performance on Standard Benchmarks:
+
+Reported in the paper to contextualize model capability:
+
+MMLU: 86.4% (5-shot)
+
+HellaSwag: 95.3% (10-shot)
+
+HumanEval: 67.0% (0-shot)
+
+Human Participant Profile
+
+Data Collection Period:
+
+2023
+
+Sample Size:
+
+758 consultants
+
+385 participants assigned to tasks “inside the frontier”
+
+373 participants assigned to tasks “outside the frontier”
+
+Population / Expertise:
+
+Professional management consultants at Boston Consulting Group (BCG)
+
+Participants are highly skilled knowledge workers with substantial domain expertise
+
+Domain Expertise:
+
+Business strategy, marketing, and analytical problem-solving
+
+AI / LLM Familiarity:
+
+Measured via surveys
+
+Study conducted ~6 months after the public release of ChatGPT, when general familiarity with LLMs was still relatively low
+
+Training / Onboarding:
+
+Participants received task instructions
+
+Some conditions included an overview describing GPT-4’s capabilities and limitations, intended to calibrate expectations
+
+Interaction and Task Design
+
+Task Description:
+
+Two classes of tasks:
+
+Inside-the-frontier tasks: creative and ideation-heavy consulting tasks (e.g., generating product ideas for a beverage or footwear company)
+
+Outside-the-frontier tasks: structured, quantitative tasks (e.g., spreadsheet-based data analysis)
+
+Interface:
+
+Custom company interface integrating GPT-4 responses
+
+AI Role / Degree of Autonomy:
+
+Assistive
+
+GPT-4 provided suggestions, ideas, and written content; humans retained full control over final outputs
+
+Experimental Conditions:
+
+No AI (control)
+
+GPT-4 only
+
+GPT-4 + Overview (participants received guidance about model strengths/limits)
+
+Primary Outcome Measures:
+
+Quality of output, assessed by human graders
+
+Graders included BCG professionals and MBA students at a top business school
+
+Quality score averaged across 18 evaluation dimensions
+
+Main Effects:
+
+For tasks inside the frontier:
+
+GPT-4 + Overview increased quality scores by 1.75 points over a control mean of 4.1 (~42.5% increase)
+
+GPT-4 only increased scores by 1.56 points (~38% increase)
+
+For tasks outside the frontier:
+
+No productivity or quality gains; in some cases, performance declined
+
+Notes on Interpretation
+
+This study highlights that model capability relative to task demands is a first-order determinant of human–AI outcomes
+
+Even highly skilled professionals benefit from AI assistance when tasks align with model strengths
+
+Conversely, AI can hinder performance when applied outside its effective domain
+
+The inclusion of an “overview” condition demonstrates that meta-knowledge about AI can meaningfully shape outcomes, even when the model itself is unchanged

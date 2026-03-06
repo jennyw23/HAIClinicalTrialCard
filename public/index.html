@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Clinical Trial Cards</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --navy: #1e3a5f;
+      --blue: #2563eb;
+      --teal: #0891b2;
+      --green: #059669;
+      --amber: #d97706;
+      --red: #dc2626;
+    }
+
+    /* ── Scroll fade-in ── */
+    .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── Card hover ── */
+    .card-lift { transition: transform 0.2s ease, box-shadow 0.2s ease; cursor: pointer; }
+    .card-lift:hover { transform: translateY(-3px); box-shadow: 0 16px 40px rgba(0,0,0,0.13); }
+
+    /* ── Effect badges ── */
+    .badge-positive { background: #d1fae5; color: #065f46; }
+    .badge-negative { background: #fee2e2; color: #991b1b; }
+    .badge-mixed    { background: #fef3c7; color: #92400e; }
+    .badge-unknown  { background: #f1f5f9; color: #64748b; }
+
+    /* ── Effect border left ── */
+    .border-positive { border-left: 4px solid #059669; }
+    .border-negative { border-left: 4px solid #dc2626; }
+    .border-mixed    { border-left: 4px solid #d97706; }
+    .border-unknown  { border-left: 4px solid #94a3b8; }
+
+    /* ── Completeness bar ── */
+    .bar-bg { height: 5px; background: #e2e8f0; border-radius: 3px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+    .bar-high   { background: #059669; }
+    .bar-med    { background: #d97706; }
+    .bar-low    { background: #dc2626; }
+
+    /* ── Missing field highlight ── */
+    .missing { background: #fffbeb; border: 1px dashed #f59e0b; color: #92400e; padding: 2px 6px; border-radius: 4px; font-style: italic; font-size: 0.8rem; }
+
+    /* ── Tabs ── */
+    .tab-btn { padding: 0.5rem 1.25rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: all 0.15s; border: 1.5px solid transparent; }
+    .tab-btn.active { background: #1e3a5f; color: white; }
+    .tab-btn:not(.active) { color: #64748b; border-color: #e2e8f0; }
+    .tab-btn:not(.active):hover { border-color: #94a3b8; color: #1e293b; }
+
+    /* ── Chip filters ── */
+    .chip { padding: 0.3rem 0.875rem; border-radius: 9999px; border: 1.5px solid #e2e8f0; font-size: 0.8125rem; cursor: pointer; transition: all 0.15s; background: white; color: #475569; white-space: nowrap; }
+    .chip:hover { border-color: #1e3a5f; color: #1e3a5f; }
+    .chip.active { background: #1e3a5f; border-color: #1e3a5f; color: white; }
+
+    /* ── Drop zone ── */
+    .drop-zone { border: 2px dashed #cbd5e1; border-radius: 0.75rem; transition: all 0.2s; }
+    .drop-zone.drag-over { border-color: #2563eb; background: #eff6ff; }
+
+    /* ── Modal ── */
+    .modal-wrap { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55); z-index: 200; overflow-y: auto; padding: 1.5rem; }
+    .modal-wrap.open { display: flex; align-items: flex-start; justify-content: center; }
+    .modal-box { background: white; border-radius: 1rem; width: 100%; max-width: 900px; box-shadow: 0 24px 64px rgba(0,0,0,0.2); margin: auto; }
+
+    /* ── Form inputs ── */
+    .inp { width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem; transition: border-color 0.15s, box-shadow 0.15s; }
+    .inp:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+    .lbl { display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.25rem; }
+
+    /* ── Radio group ── */
+    .radio-group { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .radio-opt { display: flex; align-items: center; gap: 0.375rem; padding: 0.375rem 0.75rem; border: 1.5px solid #e2e8f0; border-radius: 0.5rem; cursor: pointer; font-size: 0.8125rem; color: #475569; transition: all 0.15s; }
+    .radio-opt:hover { border-color: #94a3b8; }
+    .radio-opt input { accent-color: #1e3a5f; }
+    .radio-opt.selected { border-color: #1e3a5f; background: #f0f4ff; color: #1e3a5f; font-weight: 500; }
+
+    /* ── Spinner ── */
+    .spin { width: 22px; height: 22px; border: 3px solid #e2e8f0; border-top-color: #2563eb; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Toast ── */
+    #toast { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 999; transform: translateY(1rem); opacity: 0; transition: all 0.25s; pointer-events: none; }
+    #toast.show { transform: translateY(0); opacity: 1; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
+
+    /* ── Gradient hero ── */
+    .hero-gradient { background: linear-gradient(135deg, #1e3a5f 0%, #1d4ed8 60%, #0891b2 100%); }
+
+    /* ── Section divider ── */
+    .section-dot { width: 10px; height: 10px; border-radius: 50%; background: #2563eb; display: inline-block; }
+
+    /* ── Template visual ── */
+    .template-col { border-radius: 0.75rem; padding: 1.25rem; height: 100%; }
+
+    /* ── Sticky nav shadow on scroll ── */
+    #navbar { transition: box-shadow 0.2s; }
+    #navbar.scrolled { box-shadow: 0 1px 16px rgba(0,0,0,0.1); }
+  </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800">
+
+<!-- ══════════════════════════════════════════════════════ NAVBAR -->
+<nav id="navbar" class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-15 py-3">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-[#1e3a5f] flex items-center justify-center flex-shrink-0">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="white"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+        </div>
+        <span class="font-bold text-[#1e3a5f] text-base tracking-tight">AI Clinical Trial Cards</span>
+      </div>
+      <div class="hidden md:flex items-center gap-1">
+        <a href="#about" class="px-3 py-1.5 text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-50 rounded-md font-medium transition-colors">About</a>
+        <a href="#browse" class="px-3 py-1.5 text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-50 rounded-md font-medium transition-colors">Browse Cards</a>
+        <a href="#submit" class="px-3 py-1.5 text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-50 rounded-md font-medium transition-colors">Submit</a>
+        <a href="#export" class="px-3 py-1.5 text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-50 rounded-md font-medium transition-colors">Export</a>
+        <a href="#submit" class="ml-2 px-4 py-1.5 bg-[#1e3a5f] text-white text-sm font-semibold rounded-lg hover:bg-[#162d4a] transition-colors">+ Submit Card</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════ HERO -->
+<section id="hero" class="hero-gradient pt-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <div class="max-w-2xl fade-in">
+      <div class="inline-flex items-center gap-2 bg-white/15 text-cyan-100 text-sm font-medium px-3 py-1 rounded-full mb-5 border border-white/20">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1L8.5 5.5H13L9.25 8L10.75 12.5L7 10L3.25 12.5L4.75 8L1 5.5H5.5L7 1Z" fill="currentColor"/></svg>
+        From Patchwork to Progress
+      </div>
+      <h1 class="text-4xl sm:text-5xl font-extrabold text-white mb-5 leading-tight tracking-tight">
+        AI Clinical<br />Trial Cards
+      </h1>
+      <p class="text-lg text-blue-100 mb-8 leading-relaxed">
+        A standardized documentation framework for human–AI collaboration studies — making research findings comparable, reproducible, and policy-relevant.
+      </p>
+      <div class="flex flex-wrap gap-3">
+        <a href="#browse" class="px-5 py-2.5 bg-white text-[#1e3a5f] font-semibold rounded-lg hover:bg-blue-50 transition-colors text-sm shadow-md">Browse Cards</a>
+        <a href="#submit" class="px-5 py-2.5 bg-white/10 border border-white/30 text-white font-semibold rounded-lg hover:bg-white/20 transition-colors text-sm">Submit a Card</a>
+        <a href="#about" class="px-5 py-2.5 text-blue-200 hover:text-white font-medium text-sm transition-colors flex items-center gap-1">
+          Learn more
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+    </div>
+    <!-- Stats row -->
+    <div id="hero-stats" class="mt-14 grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div class="bg-white/10 border border-white/15 rounded-xl p-4">
+        <div id="stat-total" class="text-3xl font-bold text-white">—</div>
+        <div class="text-blue-200 text-sm mt-0.5">Cards in database</div>
+      </div>
+      <div class="bg-white/10 border border-white/15 rounded-xl p-4">
+        <div id="stat-domains" class="text-3xl font-bold text-white">—</div>
+        <div class="text-blue-200 text-sm mt-0.5">Task domains</div>
+      </div>
+      <div class="bg-white/10 border border-white/15 rounded-xl p-4">
+        <div id="stat-positive" class="text-3xl font-bold text-white">—</div>
+        <div class="text-blue-200 text-sm mt-0.5">Positive effect studies</div>
+      </div>
+      <div class="bg-white/10 border border-white/15 rounded-xl p-4">
+        <div id="stat-participants" class="text-3xl font-bold text-white">—</div>
+        <div class="text-blue-200 text-sm mt-0.5">Total participants</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ ABOUT -->
+<section id="about" class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-2xl mx-auto text-center mb-14 fade-in">
+      <span class="text-xs font-bold uppercase tracking-widest text-[#2563eb] mb-3 block">The Problem</span>
+      <h2 class="text-3xl font-bold text-slate-900 mb-4">Why standardized documentation matters</h2>
+      <p class="text-slate-600 leading-relaxed">
+        Human–AI collaboration studies vary widely in their AI systems, participant populations, and interaction designs — yet findings are often cited as if directly comparable. This creates an "evidence gap" that makes it impossible to know what actually generalizes.
+      </p>
+    </div>
+
+    <!-- Three columns: problem examples -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 fade-in">
+      <div class="bg-red-50 rounded-xl p-5 border border-red-100">
+        <div class="w-9 h-9 bg-red-100 rounded-lg flex items-center justify-center mb-3">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3V10M9 13V13.5" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="9" r="7.5" stroke="#dc2626" stroke-width="1.5"/></svg>
+        </div>
+        <h3 class="font-semibold text-slate-800 mb-1 text-sm">Hidden heterogeneity</h3>
+        <p class="text-xs text-slate-600 leading-relaxed">The same AI model may improve outcomes for novices while degrading expert performance — but studies rarely report this distinction, masking who actually benefits.</p>
+      </div>
+      <div class="bg-amber-50 rounded-xl p-5 border border-amber-100">
+        <div class="w-9 h-9 bg-amber-100 rounded-lg flex items-center justify-center mb-3">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9H15M9 3L15 9L9 15" stroke="#d97706" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3 class="font-semibold text-slate-800 mb-1 text-sm">Incomparable designs</h3>
+        <p class="text-xs text-slate-600 leading-relaxed">Real-time AI suggestions versus post-hoc review represent fundamentally different interventions. Interface design alone can alter user behavior and measured outcomes.</p>
+      </div>
+      <div class="bg-blue-50 rounded-xl p-5 border border-blue-100">
+        <div class="w-9 h-9 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="14" height="14" rx="2" stroke="#2563eb" stroke-width="1.5"/><path d="M6 6H12M6 9H12M6 12H9" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <h3 class="font-semibold text-slate-800 mb-1 text-sm">Missing context</h3>
+        <p class="text-xs text-slate-600 leading-relaxed">Key details — model version, fine-tuning status, prompting strategy — are buried in appendices or omitted. Policymakers cannot distinguish apples from oranges.</p>
+      </div>
+    </div>
+
+    <!-- The Card Components -->
+    <div class="max-w-2xl mx-auto text-center mb-10 fade-in">
+      <span class="text-xs font-bold uppercase tracking-widest text-[#2563eb] mb-3 block">The Solution</span>
+      <h2 class="text-3xl font-bold text-slate-900 mb-4">Three components, one shared language</h2>
+      <p class="text-slate-600">Every AI Clinical Trial Card documents the same three dimensions that shape human–AI outcomes.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 fade-in">
+      <!-- AI Model -->
+      <div class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+        <div class="bg-[#1e3a5f] px-5 py-4">
+          <div class="flex items-center gap-2.5 mb-1">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="white" opacity="0.9"><circle cx="10" cy="10" r="7" stroke="white" stroke-width="1.5" fill="none"/><path d="M7 10H13M10 7V13" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <span class="text-white font-bold text-sm tracking-wide uppercase">AI Model</span>
+          </div>
+          <p class="text-blue-200 text-xs">What system was used, and how was it configured?</p>
+        </div>
+        <ul class="p-5 space-y-2 text-sm text-slate-700">
+          <li class="flex items-start gap-2"><span class="text-[#2563eb] mt-0.5 flex-shrink-0">›</span><span>Provider &amp; model name/version</span></li>
+          <li class="flex items-start gap-2"><span class="text-[#2563eb] mt-0.5 flex-shrink-0">›</span><span>Fine-tuning status</span></li>
+          <li class="flex items-start gap-2"><span class="text-[#2563eb] mt-0.5 flex-shrink-0">›</span><span>Access method (API, plugin, web interface)</span></li>
+          <li class="flex items-start gap-2"><span class="text-[#2563eb] mt-0.5 flex-shrink-0">›</span><span>Key parameters (temperature, system prompt)</span></li>
+          <li class="flex items-start gap-2"><span class="text-[#2563eb] mt-0.5 flex-shrink-0">›</span><span>Performance on standard benchmarks</span></li>
+        </ul>
+      </div>
+      <!-- Human Participants -->
+      <div class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+        <div class="bg-[#0891b2] px-5 py-4">
+          <div class="flex items-center gap-2.5 mb-1">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3" stroke="white" stroke-width="1.5"/><path d="M4 17C4 14.239 6.686 12 10 12C13.314 12 16 14.239 16 17" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <span class="text-white font-bold text-sm tracking-wide uppercase">Human Profile</span>
+          </div>
+          <p class="text-cyan-100 text-xs">Who were the participants, and what expertise did they bring?</p>
+        </div>
+        <ul class="p-5 space-y-2 text-sm text-slate-700">
+          <li class="flex items-start gap-2"><span class="text-[#0891b2] mt-0.5 flex-shrink-0">›</span><span>Sample size (N)</span></li>
+          <li class="flex items-start gap-2"><span class="text-[#0891b2] mt-0.5 flex-shrink-0">›</span><span>Population &amp; domain expertise</span></li>
+          <li class="flex items-start gap-2"><span class="text-[#0891b2] mt-0.5 flex-shrink-0">›</span><span>Expertise level (Low / Moderate / High)</span></li>
+          <li class="flex items-start gap-2"><span class="text-[#0891b2] mt-0.5 flex-shrink-0">›</span><span>Prior LLM familiarity</span></li>
+          <li class="flex items-start gap-2"><span class="text-[#0891b2] mt-0.5 flex-shrink-0">›</span><span>Training or onboarding provided</span></li>
+        </ul>
+      </div>
+      <!-- Interaction / Task -->
+      <div class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+        <div class="bg-[#059669] px-5 py-4">
+          <div class="flex items-center gap-2.5 mb-1">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="10" height="10" rx="1.5" stroke="white" stroke-width="1.5"/><path d="M14 7L18 10L14 13" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="text-white font-bold text-sm tracking-wide uppercase">Interaction / Task</span>
+          </div>
+          <p class="text-green-100 text-xs">What did they do together, and how was success measured?</p>
+        </div>
+        <ul class="p-5 space-y-2 text-sm text-slate-700">
+          <li class="flex items-start gap-2"><span class="text-[#059669] mt-0.5 flex-shrink-0">›</span><span>Task description &amp; domain</span></li>
+          <li class="flex items-start gap-2"><span class="text-[#059669] mt-0.5 flex-shrink-0">›</span><span>Interface used (chat, plugin, dashboard)</span></li>
+          <li class="flex items-start gap-2"><span class="text-[#059669] mt-0.5 flex-shrink-0">›</span><span>AI role (assistive / semi-autonomous / autonomous)</span></li>
+          <li class="flex items-start gap-2"><span class="text-[#059669] mt-0.5 flex-shrink-0">›</span><span>Experimental conditions &amp; outcome metrics</span></li>
+          <li class="flex items-start gap-2"><span class="text-[#059669] mt-0.5 flex-shrink-0">›</span><span>Prompting strategy &amp; effect direction</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ BROWSE -->
+<section id="browse" class="py-20 bg-slate-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 fade-in">
+      <div>
+        <span class="text-xs font-bold uppercase tracking-widest text-[#2563eb] mb-2 block">The Evidence</span>
+        <h2 class="text-3xl font-bold text-slate-900">Browse AI Clinical Trial Cards</h2>
+      </div>
+      <div id="results-count" class="text-sm text-slate-500 font-medium"></div>
+    </div>
+
+    <!-- Search + sort row -->
+    <div class="flex flex-col sm:flex-row gap-3 mb-5 fade-in">
+      <div class="relative flex-1">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <input id="search-input" type="text" placeholder="Search by title, author, model..." class="inp pl-9 h-10" oninput="applyFilters()" />
+      </div>
+      <select id="sort-select" class="inp w-auto h-10 pr-8" onchange="applyFilters()">
+        <option value="year">Sort: Newest first</option>
+        <option value="sample">Sort: Largest sample</option>
+        <option value="complete">Sort: Most complete</option>
+        <option value="alpha">Sort: Alphabetical</option>
+      </select>
+      <button onclick="clearFilters()" class="px-4 h-10 text-sm text-slate-500 border border-slate-200 rounded-lg hover:bg-white hover:border-slate-300 transition-colors whitespace-nowrap">Clear filters</button>
+    </div>
+
+    <!-- Filter chips -->
+    <div class="bg-white rounded-xl border border-slate-200 p-4 mb-6 fade-in">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div>
+          <p class="lbl mb-2">Effect direction</p>
+          <div class="flex flex-wrap gap-1.5">
+            <button class="chip active" data-filter="effect" data-value="" onclick="setChip(this, 'effect')">All</button>
+            <button class="chip" data-filter="effect" data-value="positive" onclick="setChip(this, 'effect')">Positive</button>
+            <button class="chip" data-filter="effect" data-value="mixed" onclick="setChip(this, 'effect')">Mixed</button>
+            <button class="chip" data-filter="effect" data-value="negative" onclick="setChip(this, 'effect')">Negative</button>
+          </div>
+        </div>
+        <div>
+          <p class="lbl mb-2">AI role</p>
+          <div class="flex flex-wrap gap-1.5">
+            <button class="chip active" data-filter="role" data-value="" onclick="setChip(this, 'role')">All</button>
+            <button class="chip" data-filter="role" data-value="assistive" onclick="setChip(this, 'role')">Assistive</button>
+            <button class="chip" data-filter="role" data-value="semi-autonomous" onclick="setChip(this, 'role')">Semi-auto</button>
+            <button class="chip" data-filter="role" data-value="autonomous" onclick="setChip(this, 'role')">Autonomous</button>
+          </div>
+        </div>
+        <div>
+          <p class="lbl mb-2">Expertise level</p>
+          <div class="flex flex-wrap gap-1.5">
+            <button class="chip active" data-filter="expertise" data-value="" onclick="setChip(this, 'expertise')">All</button>
+            <button class="chip" data-filter="expertise" data-value="Low" onclick="setChip(this, 'expertise')">Low</button>
+            <button class="chip" data-filter="expertise" data-value="Moderate" onclick="setChip(this, 'expertise')">Moderate</button>
+            <button class="chip" data-filter="expertise" data-value="High" onclick="setChip(this, 'expertise')">High</button>
+            <button class="chip" data-filter="expertise" data-value="Heterogeneous" onclick="setChip(this, 'expertise')">Mixed</button>
+          </div>
+        </div>
+        <div>
+          <p class="lbl mb-2">Domain &amp; study type</p>
+          <div class="flex flex-wrap gap-1.5">
+            <select id="filter-domain" class="inp h-8 text-xs py-0 px-2" onchange="applyFilters()"><option value="">All domains</option></select>
+            <select id="filter-study" class="inp h-8 text-xs py-0 px-2 mt-1.5" onchange="applyFilters()"><option value="">All study types</option></select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card grid -->
+    <div id="card-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 fade-in">
+      <div class="col-span-full flex flex-col items-center py-16 text-slate-400">
+        <div class="spin mb-4"></div>
+        <p class="text-sm">Loading cards...</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ SUBMIT -->
+<section id="submit" class="py-20 bg-white">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-10 fade-in">
+      <span class="text-xs font-bold uppercase tracking-widest text-[#2563eb] mb-2 block">Contribute</span>
+      <h2 class="text-3xl font-bold text-slate-900 mb-3">Submit an AI Clinical Trial Card</h2>
+      <p class="text-slate-600 text-sm max-w-xl mx-auto">Upload a paper PDF or paste LaTeX source to auto-fill the card using AI, then review and submit. You can also enter details manually.</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex gap-2 mb-6 justify-center fade-in">
+      <button class="tab-btn active" id="tab-pdf" onclick="switchTab('pdf')">Upload PDF</button>
+      <button class="tab-btn" id="tab-text" onclick="switchTab('text')">Paste LaTeX / Text</button>
+      <button class="tab-btn" id="tab-manual" onclick="switchTab('manual')">Manual Entry</button>
+    </div>
+
+    <!-- PDF tab -->
+    <div id="panel-pdf" class="fade-in">
+      <div id="drop-zone" class="drop-zone p-10 text-center cursor-pointer mb-4" onclick="document.getElementById('file-input').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+        <svg class="mx-auto mb-3 text-slate-300" width="40" height="40" viewBox="0 0 40 40" fill="none"><rect x="6" y="2" width="22" height="30" rx="2" stroke="currentColor" stroke-width="2"/><path d="M22 2V10H30" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 20H22M12 25H18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <p class="text-slate-600 font-medium text-sm">Drop a PDF here, or <span class="text-[#2563eb]">click to browse</span></p>
+        <p class="text-xs text-slate-400 mt-1">PDF or .txt / .tex — up to 25 MB</p>
+        <div id="file-name" class="mt-3 text-sm font-medium text-[#1e3a5f] hidden"></div>
+      </div>
+      <input type="file" id="file-input" accept=".pdf,.txt,.tex" class="hidden" onchange="handleFileSelect(this.files[0])" />
+      <button id="parse-btn" onclick="parsePDF()" class="w-full py-2.5 bg-[#1e3a5f] text-white font-semibold rounded-lg hover:bg-[#162d4a] transition-colors text-sm disabled:opacity-50" disabled>
+        Parse with AI
+      </button>
+      <p id="parse-error" class="text-red-600 text-sm mt-2 hidden"></p>
+    </div>
+
+    <!-- Text tab -->
+    <div id="panel-text" class="hidden fade-in">
+      <textarea id="text-input" class="inp h-48 resize-none mb-4 font-mono text-xs" placeholder="Paste LaTeX source or plain text of the paper here..."></textarea>
+      <button onclick="parseText()" class="w-full py-2.5 bg-[#1e3a5f] text-white font-semibold rounded-lg hover:bg-[#162d4a] transition-colors text-sm">
+        Parse with AI
+      </button>
+      <p id="text-parse-error" class="text-red-600 text-sm mt-2 hidden"></p>
+    </div>
+
+    <!-- Manual tab (placeholder shown; same form rendered below always) -->
+    <div id="panel-manual" class="hidden">
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800 mb-4">
+        Fill in the form below manually. Fields marked with * are recommended for meta-analysis inclusion.
+      </div>
+    </div>
+
+    <!-- Parse loading overlay -->
+    <div id="parse-loading" class="hidden text-center py-8">
+      <div class="spin mx-auto mb-3"></div>
+      <p class="text-sm text-slate-500">Extracting card fields with Claude...</p>
+    </div>
+
+    <!-- ── THE FORM (always rendered; shown after parse or in manual mode) ── -->
+    <div id="card-form-wrap" class="mt-6">
+      <div class="bg-green-50 border border-green-200 rounded-lg p-3 mb-5 text-sm text-green-800 hidden" id="parse-success-banner">
+        <span class="font-semibold">Card auto-filled!</span> Review the fields below, correct any errors, then submit.
+      </div>
+
+      <!-- Section: Study info -->
+      <div class="bg-slate-50 rounded-xl border border-slate-200 p-5 mb-4">
+        <h3 class="font-bold text-slate-800 text-sm mb-4 uppercase tracking-wide">Study Information</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="sm:col-span-2">
+            <label class="lbl">Paper title *</label>
+            <input id="f-title" type="text" class="inp" placeholder="Full paper title" />
+          </div>
+          <div class="sm:col-span-2">
+            <label class="lbl">Authors * (comma-separated)</label>
+            <input id="f-authors" type="text" class="inp" placeholder="Author One, Author Two, ..." />
+          </div>
+          <div>
+            <label class="lbl">Year *</label>
+            <input id="f-year" type="number" class="inp" placeholder="e.g. 2024" min="2000" max="2030" />
+          </div>
+          <div>
+            <label class="lbl">Study type *</label>
+            <select id="f-study-type" class="inp">
+              <option value="">— select —</option>
+              <option value="lab experiment">Lab experiment</option>
+              <option value="field experiment">Field experiment</option>
+              <option value="randomized controlled trial">Randomized controlled trial</option>
+              <option value="quasi-experimental">Quasi-experimental</option>
+              <option value="observational">Observational</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: AI Model -->
+      <div class="bg-[#f0f4ff] rounded-xl border border-indigo-100 p-5 mb-4">
+        <h3 class="font-bold text-[#1e3a5f] text-sm mb-4 uppercase tracking-wide flex items-center gap-2">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#1e3a5f" stroke-width="1.5"/><path d="M4.5 7H9.5M7 4.5V9.5" stroke="#1e3a5f" stroke-width="1.5" stroke-linecap="round"/></svg>
+          AI Model Details
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div><label class="lbl">Provider *</label><input id="f-ai-provider" type="text" class="inp" placeholder="e.g. OpenAI, Google, Anthropic" /></div>
+          <div><label class="lbl">Model name *</label><input id="f-ai-model" type="text" class="inp" placeholder="e.g. GPT-4, Claude 3, Gemini" /></div>
+          <div><label class="lbl">Model version</label><input id="f-ai-version" type="text" class="inp" placeholder="e.g. gpt-4-0613, claude-3-opus-20240229" /></div>
+          <div>
+            <label class="lbl">Fine-tuned?</label>
+            <div class="radio-group" id="rg-finetuned">
+              <label class="radio-opt"><input type="radio" name="finetuned" value="true" /> Yes</label>
+              <label class="radio-opt"><input type="radio" name="finetuned" value="false" checked /> No</label>
+              <label class="radio-opt"><input type="radio" name="finetuned" value="null" /> Unknown</label>
+            </div>
+          </div>
+          <div><label class="lbl">Access method *</label><input id="f-access" type="text" class="inp" placeholder="e.g. ChatGPT web, OpenAI API, VS Code plugin" /></div>
+          <div>
+            <label class="lbl">Benchmarks reported?</label>
+            <div class="radio-group" id="rg-benchmarks">
+              <label class="radio-opt"><input type="radio" name="benchmarks" value="true" /> Yes</label>
+              <label class="radio-opt"><input type="radio" name="benchmarks" value="false" checked /> No</label>
+            </div>
+          </div>
+          <div class="sm:col-span-2"><label class="lbl">Prompting / configuration details</label><textarea id="f-ai-config" class="inp h-16 resize-none" placeholder="System prompt, temperature, sampling parameters, etc."></textarea></div>
+          <div class="sm:col-span-2"><label class="lbl">Key parameters</label><input id="f-ai-params" type="text" class="inp" placeholder="Temperature, Top-P, context window, etc." /></div>
+        </div>
+      </div>
+
+      <!-- Section: Human Participants -->
+      <div class="bg-cyan-50 rounded-xl border border-cyan-100 p-5 mb-4">
+        <h3 class="font-bold text-cyan-800 text-sm mb-4 uppercase tracking-wide flex items-center gap-2">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="2.5" stroke="#0891b2" stroke-width="1.5"/><path d="M2.5 12.5C2.5 10.015 4.515 8 7 8C9.485 8 11.5 10.015 11.5 12.5" stroke="#0891b2" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Human Participant Profile
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div><label class="lbl">Sample size (N) *</label><input id="f-n" type="number" class="inp" placeholder="e.g. 453" /></div>
+          <div><label class="lbl">Data collection period</label><input id="f-period" type="text" class="inp" placeholder="e.g. Jan 2023 – Mar 2023" /></div>
+          <div class="sm:col-span-2"><label class="lbl">Population *</label><input id="f-population" type="text" class="inp" placeholder="e.g. Practicing physicians, college students, software engineers" /></div>
+          <div>
+            <label class="lbl">Expertise level *</label>
+            <div class="radio-group" id="rg-expertise">
+              <label class="radio-opt"><input type="radio" name="expertise" value="Low" /> Low</label>
+              <label class="radio-opt"><input type="radio" name="expertise" value="Moderate" /> Moderate</label>
+              <label class="radio-opt"><input type="radio" name="expertise" value="High" /> High</label>
+              <label class="radio-opt"><input type="radio" name="expertise" value="Heterogeneous" /> Mixed</label>
+            </div>
+          </div>
+          <div><label class="lbl">Domain expertise</label><input id="f-domain-exp" type="text" class="inp" placeholder="e.g. Clinical medicine, Python programming" /></div>
+          <div><label class="lbl">Prior LLM familiarity *</label><input id="f-familiarity" type="text" class="inp" placeholder="e.g. Low (pre-ChatGPT), Mixed, High" /></div>
+          <div><label class="lbl">Training / onboarding provided</label><input id="f-training" type="text" class="inp" placeholder="e.g. None, brief tutorial, standardized prompting guide" /></div>
+        </div>
+      </div>
+
+      <!-- Section: Interaction/Task -->
+      <div class="bg-green-50 rounded-xl border border-green-100 p-5 mb-4">
+        <h3 class="font-bold text-green-800 text-sm mb-4 uppercase tracking-wide flex items-center gap-2">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="3.5" width="8" height="7" rx="1" stroke="#059669" stroke-width="1.5"/><path d="M11 5.5L13.5 7L11 8.5" stroke="#059669" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Interaction &amp; Task Design
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div><label class="lbl">Task domain *</label><input id="f-task-domain" type="text" class="inp" placeholder="e.g. Healthcare, Education, Software development" /></div>
+          <div><label class="lbl">Interface used *</label><input id="f-interface" type="text" class="inp" placeholder="e.g. Chat window, VS Code plugin, custom dashboard" /></div>
+          <div class="sm:col-span-2"><label class="lbl">Task description *</label><textarea id="f-task-desc" class="inp h-16 resize-none" placeholder="Brief description of the task participants performed"></textarea></div>
+          <div>
+            <label class="lbl">AI role *</label>
+            <div class="radio-group" id="rg-ai-role">
+              <label class="radio-opt"><input type="radio" name="airole" value="assistive" checked /> Assistive</label>
+              <label class="radio-opt"><input type="radio" name="airole" value="semi-autonomous" /> Semi-auto</label>
+              <label class="radio-opt"><input type="radio" name="airole" value="autonomous" /> Autonomous</label>
+            </div>
+          </div>
+          <div>
+            <label class="lbl">Effect direction *</label>
+            <div class="radio-group" id="rg-effect">
+              <label class="radio-opt"><input type="radio" name="effect" value="positive" /> Positive</label>
+              <label class="radio-opt"><input type="radio" name="effect" value="negative" /> Negative</label>
+              <label class="radio-opt"><input type="radio" name="effect" value="mixed" /> Mixed</label>
+              <label class="radio-opt"><input type="radio" name="effect" value="null" /> Unknown</label>
+            </div>
+          </div>
+          <div><label class="lbl">Experimental conditions (comma-separated)</label><input id="f-conditions" type="text" class="inp" placeholder="e.g. No AI, AI assistance, AI + training" /></div>
+          <div><label class="lbl">Primary outcome metrics (comma-separated)</label><input id="f-outcomes" type="text" class="inp" placeholder="e.g. Task completion time, Quality rating, Accuracy" /></div>
+          <div class="sm:col-span-2"><label class="lbl">Main effects summary *</label><textarea id="f-effects-summary" class="inp h-16 resize-none" placeholder="Brief plain-language summary of the key findings and effect sizes"></textarea></div>
+          <div><label class="lbl">Prompting strategy</label><input id="f-prompting-strategy" type="text" class="inp" placeholder="e.g. Zero-shot, Few-shot, Chain-of-thought" /></div>
+        </div>
+      </div>
+
+      <!-- Submitter info -->
+      <div class="bg-slate-50 rounded-xl border border-slate-200 p-5 mb-4">
+        <h3 class="font-bold text-slate-700 text-sm mb-3 uppercase tracking-wide">Submitter (optional)</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div><label class="lbl">Your name</label><input id="f-submitter-name" type="text" class="inp" placeholder="e.g. Dr. Jane Smith" /></div>
+          <div><label class="lbl">Your role</label><input id="f-submitter-role" type="text" class="inp" placeholder="e.g. Co-author, Reviewer, Librarian" /></div>
+        </div>
+      </div>
+
+      <div id="form-error" class="text-red-600 text-sm mb-3 hidden"></div>
+      <button id="submit-btn" onclick="submitCard()" class="w-full py-3 bg-[#1e3a5f] text-white font-bold rounded-xl hover:bg-[#162d4a] transition-colors text-sm tracking-wide shadow">
+        Submit AI Clinical Trial Card
+      </button>
+      <p class="text-xs text-slate-400 text-center mt-2">Submissions are added to the public database and available for meta-analysis export.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ EXPORT -->
+<section id="export" class="py-20 bg-slate-50">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-10 fade-in">
+      <span class="text-xs font-bold uppercase tracking-widest text-[#2563eb] mb-2 block">Meta-analysis</span>
+      <h2 class="text-3xl font-bold text-slate-900 mb-3">Download the Full Dataset</h2>
+      <p class="text-slate-600 text-sm max-w-xl mx-auto">Export all submitted AI Clinical Trial Cards in structured formats for meta-analysis, synthesis, or further research.</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-8 fade-in">
+      <div class="bg-white rounded-xl border border-slate-200 p-6 text-center shadow-sm">
+        <div class="w-12 h-12 rounded-xl bg-[#f0f4ff] flex items-center justify-center mx-auto mb-3">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 2V8H20M12 18V12M9 15L12 18L15 15" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3 class="font-bold text-slate-800 mb-1">JSON Export</h3>
+        <p class="text-xs text-slate-500 mb-4">Full structured data with all fields. Best for programmatic analysis and database import.</p>
+        <button onclick="exportCards('json')" class="w-full py-2 bg-[#1e3a5f] text-white text-sm font-semibold rounded-lg hover:bg-[#162d4a] transition-colors">
+          Download JSON
+        </button>
+      </div>
+      <div class="bg-white rounded-xl border border-slate-200 p-6 text-center shadow-sm">
+        <div class="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center mx-auto mb-3">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="#059669" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 2V8H20M8 13H16M8 17H13" stroke="#059669" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3 class="font-bold text-slate-800 mb-1">CSV Export</h3>
+        <p class="text-xs text-slate-500 mb-4">Flat table with all card fields. Open directly in Excel, R, or Python for statistical analysis.</p>
+        <button onclick="exportCards('csv')" class="w-full py-2 bg-[#059669] text-white text-sm font-semibold rounded-lg hover:bg-[#047857] transition-colors">
+          Download CSV
+        </button>
+      </div>
+    </div>
+
+    <!-- Summary table -->
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden fade-in">
+      <div class="px-5 py-4 border-b border-slate-100">
+        <h3 class="font-bold text-slate-800 text-sm">Database summary</h3>
+      </div>
+      <div id="export-summary" class="p-5">
+        <div class="text-sm text-slate-400 text-center py-4">Loading...</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ FOOTER -->
+<footer class="bg-[#1e3a5f] text-white py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row justify-between gap-8">
+      <div class="max-w-xs">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-7 h-7 rounded-md bg-white/15 flex items-center justify-center">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="white"><rect x="1" y="1" width="5" height="5" rx="0.75"/><rect x="8" y="1" width="5" height="5" rx="0.75"/><rect x="1" y="8" width="5" height="5" rx="0.75"/><rect x="8" y="8" width="5" height="5" rx="0.75"/></svg>
+          </div>
+          <span class="font-bold text-sm">AI Clinical Trial Cards</span>
+        </div>
+        <p class="text-blue-200 text-xs leading-relaxed">Standardizing human–AI collaboration research to enable evidence-based governance of AI deployment.</p>
+      </div>
+      <div class="text-xs text-blue-300">
+        <p class="font-semibold text-white mb-2">Inspired by</p>
+        <p>Clinical trial reporting (CONSORT)</p>
+        <p>Preregistration (AsPredicted, OSF)</p>
+        <p>Model Cards (Mitchell et al., 2019)</p>
+        <p>Datasheets for Datasets (Gebru et al., 2021)</p>
+      </div>
+      <div class="text-xs text-blue-300">
+        <p class="font-semibold text-white mb-2">From the paper</p>
+        <p class="italic">"From Patchwork to Progress:</p>
+        <p class="italic">Standardizing the Human–AI</p>
+        <p class="italic">Collaboration Frontier"</p>
+      </div>
+    </div>
+    <div class="border-t border-white/10 mt-8 pt-6 text-xs text-blue-400">
+      Built to support the AICTC research initiative. Data shared for research purposes.
+    </div>
+  </div>
+</footer>
+
+<!-- ══════════════════════════════════════════════════════ CARD DETAIL MODAL -->
+<div id="card-modal" class="modal-wrap" onclick="if(event.target===this) closeModal('card-modal')">
+  <div class="modal-box my-8">
+    <div id="modal-content" class="p-6 sm:p-8"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ COMPLETE CARD MODAL -->
+<div id="complete-modal" class="modal-wrap" onclick="if(event.target===this) closeModal('complete-modal')">
+  <div class="modal-box my-8 max-w-lg">
+    <div class="p-6">
+      <div class="flex justify-between items-start mb-4">
+        <h3 class="font-bold text-slate-900">Complete Missing Fields</h3>
+        <button onclick="closeModal('complete-modal')" class="text-slate-400 hover:text-slate-600 text-xl leading-none">&times;</button>
+      </div>
+      <p class="text-sm text-slate-600 mb-5">Help improve this card by filling in the missing fields below. Co-authors and reviewers are encouraged to complete cards for published studies.</p>
+      <div id="complete-form-fields" class="space-y-4 mb-5"></div>
+      <div id="complete-error" class="text-red-600 text-sm mb-3 hidden"></div>
+      <button onclick="submitCompletion()" class="w-full py-2.5 bg-[#1e3a5f] text-white font-semibold rounded-lg hover:bg-[#162d4a] transition-colors text-sm">
+        Submit Missing Fields
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ TOAST -->
+<div id="toast" class="bg-white border border-slate-200 rounded-xl shadow-xl px-4 py-3 flex items-center gap-3 min-w-64">
+  <span id="toast-icon" class="text-lg flex-shrink-0"></span>
+  <p id="toast-msg" class="text-sm font-medium text-slate-700"></p>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ JAVASCRIPT -->
+<script>
+// ── State ───────────────────────────────────────────────────────────────────
+let allCards = [];
+let activeFilters = { effect: '', role: '', expertise: '', domain: '', study: '' };
+let selectedFile = null;
+let completingCardId = null;
+
+// ── Key fields for completeness check ───────────────────────────────────────
+const COMPLETENESS_FIELDS = [
+  { path: 'paper_title',                         label: 'Paper title' },
+  { path: 'authors',                             label: 'Authors' },
+  { path: 'year',                                label: 'Year' },
+  { path: 'study_type',                          label: 'Study type' },
+  { path: 'ai_model.provider',                   label: 'AI provider' },
+  { path: 'ai_model.model_name',                 label: 'AI model name' },
+  { path: 'ai_model.fine_tuned',                 label: 'Fine-tuned status' },
+  { path: 'ai_model.access_method',              label: 'Access method' },
+  { path: 'human_participants.sample_size',      label: 'Sample size' },
+  { path: 'human_participants.population',       label: 'Population' },
+  { path: 'human_participants.expertise_level',  label: 'Expertise level' },
+  { path: 'human_participants.ai_familiarity',   label: 'AI familiarity' },
+  { path: 'interaction_task.task_domain',        label: 'Task domain' },
+  { path: 'interaction_task.interface',          label: 'Interface' },
+  { path: 'interaction_task.ai_role',            label: 'AI role' },
+  { path: 'interaction_task.main_effects_summary', label: 'Effects summary' },
+  { path: 'interaction_task.effect_direction',   label: 'Effect direction' },
+];
+
+function getField(obj, path) {
+  return path.split('.').reduce((o, k) => (o && o[k] !== undefined ? o[k] : null), obj);
+}
+
+function getCompleteness(card) {
+  const missing = [];
+  let filled = 0;
+  for (const f of COMPLETENESS_FIELDS) {
+    const val = getField(card, f.path);
+    const ok = val !== null && val !== undefined && val !== '' && !(Array.isArray(val) && val.length === 0);
+    if (ok) filled++;
+    else missing.push(f.label);
+  }
+  return { score: Math.round((filled / COMPLETENESS_FIELDS.length) * 100), missing };
+}
+
+// ── Init ────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  setupNavScroll();
+  setupFadeIn();
+  styleRadios();
+  loadCards();
+});
+
+function setupNavScroll() {
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 10);
+  });
+}
+
+function setupFadeIn() {
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+}
+
+function styleRadios() {
+  document.querySelectorAll('.radio-opt input').forEach(inp => {
+    inp.addEventListener('change', () => {
+      inp.closest('.radio-group').querySelectorAll('.radio-opt').forEach(o => o.classList.remove('selected'));
+      if (inp.checked) inp.closest('.radio-opt').classList.add('selected');
+    });
+  });
+}
+
+// ── API calls ────────────────────────────────────────────────────────────────
+async function loadCards() {
+  try {
+    const res = await fetch('/api/cards');
+    if (!res.ok) throw new Error('Server error');
+    allCards = await res.json();
+    populateFilterOptions();
+    applyFilters();
+    updateHeroStats();
+    renderExportSummary();
+  } catch (e) {
+    document.getElementById('card-grid').innerHTML = `
+      <div class="col-span-full bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+        <p class="text-red-700 font-medium text-sm">Could not connect to the server.</p>
+        <p class="text-red-600 text-xs mt-1">Make sure the server is running: <code class="bg-red-100 px-1 rounded">npm start</code></p>
+      </div>`;
+  }
+}
+
+async function parsePDF() {
+  if (!selectedFile) return;
+  showParseLoading(true);
+  const fd = new FormData();
+  fd.append('file', selectedFile);
+  try {
+    const res = await fetch('/api/parse', { method: 'POST', body: fd });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Parse failed');
+    prefillForm(data);
+    showParseLoading(false);
+    document.getElementById('parse-success-banner').classList.remove('hidden');
+    document.getElementById('card-form-wrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    showToast('Card auto-filled from PDF', 'success');
+  } catch (e) {
+    showParseLoading(false);
+    const el = document.getElementById('parse-error');
+    el.textContent = 'Parse failed: ' + e.message;
+    el.classList.remove('hidden');
+  }
+}
+
+async function parseText() {
+  const text = document.getElementById('text-input').value.trim();
+  if (!text) return;
+  showParseLoading(true);
+  try {
+    const res = await fetch('/api/parse-text', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Parse failed');
+    prefillForm(data);
+    switchTab('manual');
+    showParseLoading(false);
+    document.getElementById('parse-success-banner').classList.remove('hidden');
+    document.getElementById('card-form-wrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    showToast('Card auto-filled from text', 'success');
+  } catch (e) {
+    showParseLoading(false);
+    const el = document.getElementById('text-parse-error');
+    el.textContent = 'Parse failed: ' + e.message;
+    el.classList.remove('hidden');
+  }
+}
+
+async function submitCard() {
+  const data = gatherFormData();
+  if (!data.paper_title) return showFormError('Paper title is required.');
+  if (!data.ai_model.provider) return showFormError('AI provider is required.');
+  if (!data.interaction_task.task_domain) return showFormError('Task domain is required.');
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true; btn.textContent = 'Submitting...';
+
+  try {
+    const res = await fetch('/api/cards', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    if (!res.ok) throw new Error((await res.json()).error);
+    const newCard = await res.json();
+    allCards.push(newCard);
+    applyFilters();
+    updateHeroStats();
+    renderExportSummary();
+    resetForm();
+    showToast('Card submitted successfully!', 'success');
+    document.getElementById('browse').scrollIntoView({ behavior: 'smooth' });
+  } catch (e) {
+    showFormError('Submit failed: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Submit AI Clinical Trial Card';
+  }
+}
+
+async function submitCompletion() {
+  const card = allCards.find(c => c.paper_id === completingCardId);
+  if (!card) return;
+
+  const updates = {};
+  document.querySelectorAll('#complete-form-fields [data-field]').forEach(inp => {
+    const field = inp.getAttribute('data-field');
+    if (inp.value.trim()) {
+      const parts = field.split('.');
+      if (parts.length === 1) updates[field] = inp.value.trim();
+      else {
+        if (!updates[parts[0]]) updates[parts[0]] = {};
+        updates[parts[0]][parts[1]] = inp.value.trim();
+      }
+    }
+  });
+
+  try {
+    const res = await fetch(`/api/cards/${completingCardId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updates) });
+    if (!res.ok) throw new Error((await res.json()).error);
+    const updated = await res.json();
+    const idx = allCards.findIndex(c => c.paper_id === completingCardId);
+    if (idx >= 0) allCards[idx] = updated;
+    applyFilters();
+    closeModal('complete-modal');
+    showToast('Card updated — thank you!', 'success');
+  } catch (e) {
+    document.getElementById('complete-error').textContent = 'Error: ' + e.message;
+    document.getElementById('complete-error').classList.remove('hidden');
+  }
+}
+
+function exportCards(format) {
+  window.location.href = `/api/export?format=${format}`;
+}
+
+// ── Filters ──────────────────────────────────────────────────────────────────
+function setChip(el, filterKey) {
+  el.closest('.flex').querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  activeFilters[filterKey] = el.getAttribute('data-value');
+  applyFilters();
+}
+
+function applyFilters() {
+  const search = document.getElementById('search-input').value.toLowerCase();
+  const domain = document.getElementById('filter-domain').value;
+  const study  = document.getElementById('filter-study').value;
+  const sort   = document.getElementById('sort-select').value;
+
+  let result = allCards.filter(c => {
+    if (activeFilters.effect && c.interaction_task?.effect_direction !== activeFilters.effect) return false;
+    if (activeFilters.role && c.interaction_task?.ai_role !== activeFilters.role) return false;
+    if (activeFilters.expertise && c.human_participants?.expertise_level !== activeFilters.expertise) return false;
+    if (domain && c.interaction_task?.task_domain !== domain) return false;
+    if (study && c.study_type !== study) return false;
+    if (search) {
+      const hay = JSON.stringify(c).toLowerCase();
+      if (!hay.includes(search)) return false;
+    }
+    return true;
+  });
+
+  result.sort((a, b) => {
+    if (sort === 'year')     return (b.year || 0) - (a.year || 0);
+    if (sort === 'sample')   return (b.human_participants?.sample_size || 0) - (a.human_participants?.sample_size || 0);
+    if (sort === 'complete') return getCompleteness(b).score - getCompleteness(a).score;
+    if (sort === 'alpha')    return (a.paper_title || '').localeCompare(b.paper_title || '');
+    return 0;
+  });
+
+  renderCards(result);
+  document.getElementById('results-count').textContent = `${result.length} of ${allCards.length} cards`;
+}
+
+function clearFilters() {
+  document.getElementById('search-input').value = '';
+  document.getElementById('filter-domain').value = '';
+  document.getElementById('filter-study').value = '';
+  activeFilters = { effect: '', role: '', expertise: '', domain: '', study: '' };
+  document.querySelectorAll('.chip').forEach(c => {
+    c.classList.toggle('active', c.getAttribute('data-value') === '');
+  });
+  applyFilters();
+}
+
+function populateFilterOptions() {
+  const domains = [...new Set(allCards.map(c => c.interaction_task?.task_domain).filter(Boolean))].sort();
+  const studies = [...new Set(allCards.map(c => c.study_type).filter(Boolean))].sort();
+
+  const domSel = document.getElementById('filter-domain');
+  domains.forEach(d => { const o = document.createElement('option'); o.value = d; o.textContent = d; domSel.appendChild(o); });
+
+  const stdSel = document.getElementById('filter-study');
+  studies.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; stdSel.appendChild(o); });
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
+function renderCards(cards) {
+  const grid = document.getElementById('card-grid');
+  if (!cards || cards.length === 0) {
+    grid.innerHTML = `<div class="col-span-full text-center py-14 text-slate-400 text-sm">No cards match your filters.</div>`;
+    return;
+  }
+  grid.innerHTML = cards.map(cardHTML).join('');
+}
+
+function effectMeta(direction) {
+  const map = {
+    positive: { badge: 'badge-positive', border: 'border-positive', label: 'Positive' },
+    negative: { badge: 'badge-negative', border: 'border-negative', label: 'Negative' },
+    mixed:    { badge: 'badge-mixed',    border: 'border-mixed',    label: 'Mixed' },
+  };
+  return map[direction] || { badge: 'badge-unknown', border: 'border-unknown', label: 'Unknown' };
+}
+
+function cardHTML(card) {
+  const { score, missing } = getCompleteness(card);
+  const em = effectMeta(card.interaction_task?.effect_direction);
+  const barClass = score >= 80 ? 'bar-high' : score >= 50 ? 'bar-med' : 'bar-low';
+  const authors = Array.isArray(card.authors) ? card.authors.slice(0, 2).join(', ') + (card.authors.length > 2 ? ' et al.' : '') : card.authors || '';
+  const summary = card.interaction_task?.main_effects_summary || '';
+  const shortSummary = summary.length > 110 ? summary.substring(0, 107) + '...' : summary;
+  const n = card.human_participants?.sample_size;
+  const hasIncomplete = missing.length > 0;
+
+  return `
+  <div class="bg-white rounded-xl border border-slate-200 shadow-sm card-lift ${em.border} overflow-hidden flex flex-col" onclick="showCardModal(${card.paper_id})">
+    <div class="p-4 flex-1">
+      <div class="flex flex-wrap items-center gap-1.5 mb-2.5">
+        <span class="text-xs px-2 py-0.5 rounded-full font-medium ${em.badge}">${em.label}</span>
+        ${card.study_type ? `<span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-medium capitalize">${card.study_type.replace('randomized controlled trial','RCT')}</span>` : ''}
+        ${card.year ? `<span class="text-xs text-slate-400 font-medium ml-auto">${card.year}</span>` : ''}
+      </div>
+
+      <h3 class="font-bold text-slate-900 text-sm leading-snug mb-1 line-clamp-2">${card.paper_title || 'Untitled'}</h3>
+      <p class="text-xs text-slate-500 mb-3">${authors}</p>
+
+      <div class="grid grid-cols-2 gap-2 mb-3">
+        <div class="bg-slate-50 rounded-lg p-2.5">
+          <p class="text-xs font-semibold text-[#1e3a5f] mb-0.5">AI Model</p>
+          <p class="text-xs text-slate-700 font-medium">${card.ai_model?.model_name || '—'}</p>
+          <p class="text-xs text-slate-500">${card.ai_model?.provider || '—'}</p>
+        </div>
+        <div class="bg-slate-50 rounded-lg p-2.5">
+          <p class="text-xs font-semibold text-[#0891b2] mb-0.5">Participants</p>
+          <p class="text-xs text-slate-700 font-medium">${n != null ? `N = ${n.toLocaleString()}` : 'N unknown'}</p>
+          <p class="text-xs text-slate-500">${card.human_participants?.expertise_level || '—'} expertise</p>
+        </div>
+      </div>
+
+      <div class="bg-slate-50 rounded-lg p-2.5 mb-3">
+        <p class="text-xs font-semibold text-[#059669] mb-0.5">Task &amp; Interface</p>
+        <p class="text-xs text-slate-700">${card.interaction_task?.task_domain || '—'} · <span class="capitalize">${card.interaction_task?.ai_role || '—'}</span> AI</p>
+        <p class="text-xs text-slate-500 truncate">${card.interaction_task?.interface || '—'}</p>
+      </div>
+
+      ${shortSummary ? `<p class="text-xs text-slate-600 italic leading-relaxed">"${shortSummary}"</p>` : ''}
+    </div>
+
+    <div class="px-4 pb-4 pt-2 border-t border-slate-100 mt-2">
+      <div class="flex items-center justify-between mb-1.5">
+        <span class="text-xs text-slate-400">${score}% complete${missing.length > 0 ? ` · ${missing.length} missing` : ''}</span>
+        ${score === 100 ? '<span class="text-xs text-green-600 font-medium">Complete</span>' : ''}
+      </div>
+      <div class="bar-bg mb-3"><div class="bar-fill ${barClass}" style="width:${score}%"></div></div>
+      <div class="flex gap-2">
+        <button class="flex-1 py-1.5 text-xs font-semibold border border-[#1e3a5f] text-[#1e3a5f] rounded-lg hover:bg-[#f0f4ff] transition-colors" onclick="event.stopPropagation(); showCardModal(${card.paper_id})">View Card</button>
+        ${hasIncomplete ? `<button class="flex-1 py-1.5 text-xs font-semibold bg-amber-50 border border-amber-200 text-amber-700 rounded-lg hover:bg-amber-100 transition-colors" onclick="event.stopPropagation(); openCompleteModal(${card.paper_id})">Help Complete</button>` : ''}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── Card detail modal ─────────────────────────────────────────────────────────
+function showCardModal(paperId) {
+  const card = allCards.find(c => c.paper_id === paperId);
+  if (!card) return;
+  const { score, missing } = getCompleteness(card);
+  const em = effectMeta(card.interaction_task?.effect_direction);
+  const barClass = score >= 80 ? 'bar-high' : score >= 50 ? 'bar-med' : 'bar-low';
+
+  const val = (v, fallback = '') => {
+    if (v === null || v === undefined || v === '') return `<span class="missing">Not reported</span>`;
+    if (Array.isArray(v)) return v.length ? v.join(', ') : `<span class="missing">Not reported</span>`;
+    if (typeof v === 'boolean') return v ? 'Yes' : 'No';
+    return String(v);
+  };
+
+  const row = (label, value) => `
+    <div class="py-2 border-b border-slate-50 last:border-0">
+      <p class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-0.5">${label}</p>
+      <p class="text-sm text-slate-800">${val(value)}</p>
+    </div>`;
+
+  document.getElementById('modal-content').innerHTML = `
+    <div class="flex items-start justify-between mb-5">
+      <div class="flex-1 pr-4">
+        <div class="flex flex-wrap gap-1.5 mb-2">
+          <span class="text-xs px-2 py-0.5 rounded-full font-medium ${em.badge}">${em.label} effect</span>
+          ${card.study_type ? `<span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 capitalize">${card.study_type}</span>` : ''}
+          ${card.year ? `<span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">${card.year}</span>` : ''}
+        </div>
+        <h2 class="font-bold text-slate-900 text-lg leading-tight mb-1">${card.paper_title}</h2>
+        <p class="text-sm text-slate-500">${Array.isArray(card.authors) ? card.authors.join(', ') : card.authors || ''}</p>
+      </div>
+      <button onclick="closeModal('card-modal')" class="text-slate-400 hover:text-slate-700 text-2xl leading-none flex-shrink-0">&times;</button>
+    </div>
+
+    <!-- Completeness bar -->
+    <div class="bg-slate-50 rounded-lg p-3 mb-5">
+      <div class="flex justify-between items-center mb-1.5">
+        <span class="text-xs font-semibold text-slate-600">Card completeness</span>
+        <span class="text-xs font-bold ${score >= 80 ? 'text-green-600' : score >= 50 ? 'text-amber-600' : 'text-red-600'}">${score}%</span>
+      </div>
+      <div class="bar-bg"><div class="bar-fill ${barClass}" style="width:${score}%"></div></div>
+      ${missing.length > 0 ? `<p class="text-xs text-slate-400 mt-1.5">Missing: ${missing.join(', ')}</p>` : ''}
+    </div>
+
+    <!-- 3-column layout -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+      <!-- AI Model -->
+      <div class="bg-[#f0f4ff] rounded-xl p-4">
+        <h3 class="font-bold text-[#1e3a5f] text-xs uppercase tracking-widest mb-3">AI Model</h3>
+        ${row('Provider', card.ai_model?.provider)}
+        ${row('Model Name', card.ai_model?.model_name)}
+        ${row('Version', card.ai_model?.model_version)}
+        ${row('Fine-tuned', card.ai_model?.fine_tuned)}
+        ${row('Access Method', card.ai_model?.access_method)}
+        ${row('Key Parameters', card.ai_model?.key_parameters)}
+        ${row('Benchmarks Reported', card.ai_model?.benchmarks_reported)}
+        ${row('Config / Prompting', card.ai_model?.prompting_or_config)}
+      </div>
+      <!-- Human Participants -->
+      <div class="bg-cyan-50 rounded-xl p-4">
+        <h3 class="font-bold text-[#0891b2] text-xs uppercase tracking-widest mb-3">Human Profile</h3>
+        ${row('Sample Size (N)', card.human_participants?.sample_size)}
+        ${row('Population', card.human_participants?.population)}
+        ${row('Expertise Level', card.human_participants?.expertise_level)}
+        ${row('Domain Expertise', card.human_participants?.domain_expertise)}
+        ${row('AI Familiarity', card.human_participants?.ai_familiarity)}
+        ${row('Training Provided', card.human_participants?.training_provided)}
+        ${row('Data Collection Period', card.human_participants?.data_collection_period)}
+      </div>
+      <!-- Interaction -->
+      <div class="bg-green-50 rounded-xl p-4">
+        <h3 class="font-bold text-[#059669] text-xs uppercase tracking-widest mb-3">Interaction / Task</h3>
+        ${row('Task Domain', card.interaction_task?.task_domain)}
+        ${row('Task Description', card.interaction_task?.task_description)}
+        ${row('Interface', card.interaction_task?.interface)}
+        ${row('AI Role', card.interaction_task?.ai_role)}
+        ${row('Conditions', card.interaction_task?.experimental_conditions)}
+        ${row('Outcome Metrics', card.interaction_task?.primary_outcomes)}
+        ${row('Prompting Strategy', card.interaction_task?.prompting_strategy)}
+        ${row('Effect Direction', card.interaction_task?.effect_direction)}
+      </div>
+    </div>
+
+    <!-- Main effects summary -->
+    <div class="bg-slate-50 rounded-xl p-4 mb-4">
+      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Main Effects Summary</p>
+      <p class="text-sm text-slate-800 italic">"${card.interaction_task?.main_effects_summary || '<span class="missing">Not reported</span>'}"</p>
+    </div>
+
+    <div class="flex gap-3">
+      ${missing.length > 0 ? `<button onclick="closeModal('card-modal'); openCompleteModal(${card.paper_id})" class="flex-1 py-2.5 bg-amber-50 border border-amber-200 text-amber-700 text-sm font-semibold rounded-lg hover:bg-amber-100 transition-colors">Help Complete This Card</button>` : ''}
+      <button onclick="closeModal('card-modal')" class="flex-1 py-2.5 border border-slate-200 text-slate-600 text-sm font-medium rounded-lg hover:bg-slate-50 transition-colors">Close</button>
+    </div>`;
+
+  openModal('card-modal');
+}
+
+// ── Complete-card modal ───────────────────────────────────────────────────────
+function openCompleteModal(paperId) {
+  const card = allCards.find(c => c.paper_id === paperId);
+  if (!card) return;
+  completingCardId = paperId;
+  const { missing } = getCompleteness(card);
+
+  const labelMap = {
+    'Paper title': 'paper_title', 'Authors': 'authors', 'Year': 'year', 'Study type': 'study_type',
+    'AI provider': 'ai_model.provider', 'AI model name': 'ai_model.model_name', 'Fine-tuned status': 'ai_model.fine_tuned',
+    'Access method': 'ai_model.access_method', 'Sample size': 'human_participants.sample_size',
+    'Population': 'human_participants.population', 'Expertise level': 'human_participants.expertise_level',
+    'AI familiarity': 'human_participants.ai_familiarity', 'Task domain': 'interaction_task.task_domain',
+    'Interface': 'interaction_task.interface', 'AI role': 'interaction_task.ai_role',
+    'Effects summary': 'interaction_task.main_effects_summary', 'Effect direction': 'interaction_task.effect_direction',
+  };
+
+  const fieldsHTML = missing.map(label => {
+    const field = labelMap[label] || label;
+    return `<div>
+      <label class="lbl">${label}</label>
+      <input type="text" class="inp" data-field="${field}" placeholder="Enter value..." />
+    </div>`;
+  }).join('');
+
+  document.getElementById('complete-form-fields').innerHTML = fieldsHTML || '<p class="text-sm text-slate-500">This card is already complete.</p>';
+  document.getElementById('complete-error').classList.add('hidden');
+  openModal('complete-modal');
+}
+
+// ── Form helpers ──────────────────────────────────────────────────────────────
+function prefillForm(data) {
+  const set = (id, val) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (Array.isArray(val)) el.value = val.join(', ');
+    else el.value = val !== null && val !== undefined ? val : '';
+  };
+
+  set('f-title', data.paper_title);
+  set('f-authors', data.authors);
+  set('f-year', data.year);
+  if (data.study_type) { const s = document.getElementById('f-study-type'); if (s) s.value = data.study_type; }
+
+  const m = data.ai_model || {};
+  set('f-ai-provider', m.provider); set('f-ai-model', m.model_name); set('f-ai-version', m.model_version);
+  set('f-access', m.access_method); set('f-ai-config', m.prompting_or_config); set('f-ai-params', m.key_parameters);
+  setRadio('finetuned', m.fine_tuned === null ? 'null' : String(m.fine_tuned));
+  setRadio('benchmarks', String(m.benchmarks_reported));
+
+  const h = data.human_participants || {};
+  set('f-n', h.sample_size); set('f-period', h.data_collection_period); set('f-population', h.population);
+  set('f-domain-exp', h.domain_expertise); set('f-familiarity', h.ai_familiarity); set('f-training', h.training_provided);
+  setRadio('expertise', h.expertise_level);
+
+  const t = data.interaction_task || {};
+  set('f-task-domain', t.task_domain); set('f-interface', t.interface); set('f-task-desc', t.task_description);
+  set('f-conditions', t.experimental_conditions); set('f-outcomes', t.primary_outcomes);
+  set('f-effects-summary', t.main_effects_summary); set('f-prompting-strategy', t.prompting_strategy);
+  setRadio('airole', t.ai_role);
+  setRadio('effect', t.effect_direction === null ? 'null' : t.effect_direction);
+}
+
+function setRadio(name, value) {
+  const inputs = document.querySelectorAll(`input[name="${name}"]`);
+  inputs.forEach(inp => {
+    if (inp.value === String(value)) {
+      inp.checked = true;
+      inp.closest('.radio-opt').classList.add('selected');
+    } else {
+      inp.closest('.radio-opt').classList.remove('selected');
+    }
+  });
+}
+
+function getRadio(name) {
+  const el = document.querySelector(`input[name="${name}"]:checked`);
+  if (!el) return null;
+  const v = el.value;
+  if (v === 'null') return null;
+  if (v === 'true') return true;
+  if (v === 'false') return false;
+  return v;
+}
+
+function gatherFormData() {
+  const arr = (id) => {
+    const v = document.getElementById(id)?.value.trim();
+    return v ? v.split(',').map(s => s.trim()).filter(Boolean) : [];
+  };
+  const txt = (id) => document.getElementById(id)?.value.trim() || null;
+  const num = (id) => { const v = document.getElementById(id)?.value; return v ? parseInt(v) : null; };
+
+  return {
+    paper_title: txt('f-title'),
+    authors: arr('f-authors'),
+    year: num('f-year'),
+    study_type: txt('f-study-type'),
+    submitted_by: txt('f-submitter-name') ? `${txt('f-submitter-name')} (${txt('f-submitter-role') || 'unspecified'})` : null,
+    ai_model: {
+      provider: txt('f-ai-provider'), model_name: txt('f-ai-model'), model_version: txt('f-ai-version'),
+      fine_tuned: getRadio('finetuned'), access_method: txt('f-access'),
+      prompting_or_config: txt('f-ai-config'), benchmarks_reported: getRadio('benchmarks'),
+      key_parameters: txt('f-ai-params'),
+    },
+    human_participants: {
+      sample_size: num('f-n'), population: txt('f-population'), expertise_level: getRadio('expertise'),
+      domain_expertise: txt('f-domain-exp'), ai_familiarity: txt('f-familiarity'),
+      training_provided: txt('f-training'), data_collection_period: txt('f-period'),
+    },
+    interaction_task: {
+      task_domain: txt('f-task-domain'), task_description: txt('f-task-desc'),
+      interface: txt('f-interface'), ai_role: getRadio('airole'),
+      experimental_conditions: arr('f-conditions'), primary_outcomes: arr('f-outcomes'),
+      main_effects_summary: txt('f-effects-summary'), effect_direction: getRadio('effect'),
+      prompting_strategy: txt('f-prompting-strategy'),
+    },
+  };
+}
+
+function resetForm() {
+  ['f-title','f-authors','f-year','f-ai-provider','f-ai-model','f-ai-version','f-access','f-ai-config',
+   'f-ai-params','f-n','f-period','f-population','f-domain-exp','f-familiarity','f-training',
+   'f-task-domain','f-interface','f-task-desc','f-conditions','f-outcomes','f-effects-summary',
+   'f-prompting-strategy','f-submitter-name','f-submitter-role'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('f-study-type').value = '';
+  document.getElementById('parse-success-banner').classList.add('hidden');
+  document.getElementById('form-error').classList.add('hidden');
+}
+
+function showFormError(msg) {
+  const el = document.getElementById('form-error');
+  el.textContent = msg; el.classList.remove('hidden');
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ── Upload ───────────────────────────────────────────────────────────────────
+function handleFileSelect(file) {
+  if (!file) return;
+  selectedFile = file;
+  const nameEl = document.getElementById('file-name');
+  nameEl.textContent = file.name; nameEl.classList.remove('hidden');
+  document.getElementById('parse-btn').disabled = false;
+  document.getElementById('parse-error').classList.add('hidden');
+}
+
+function handleDragOver(e) { e.preventDefault(); document.getElementById('drop-zone').classList.add('drag-over'); }
+function handleDragLeave()  { document.getElementById('drop-zone').classList.remove('drag-over'); }
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('drop-zone').classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) handleFileSelect(file);
+}
+
+function showParseLoading(show) {
+  ['panel-pdf','panel-text','panel-manual'].forEach(id => document.getElementById(id).classList.toggle('hidden', show));
+  document.getElementById('parse-loading').classList.toggle('hidden', !show);
+}
+
+// ── Tabs ──────────────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  ['pdf','text','manual'].forEach(t => {
+    document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
+    document.getElementById(`panel-${t}`).classList.toggle('hidden', t !== tab);
+  });
+}
+
+// ── Stats & summary ───────────────────────────────────────────────────────────
+function updateHeroStats() {
+  const total = allCards.length;
+  const domains = new Set(allCards.map(c => c.interaction_task?.task_domain).filter(Boolean)).size;
+  const positive = allCards.filter(c => c.interaction_task?.effect_direction === 'positive').length;
+  const participants = allCards.reduce((sum, c) => sum + (c.human_participants?.sample_size || 0), 0);
+
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-domains').textContent = domains;
+  document.getElementById('stat-positive').textContent = positive;
+  document.getElementById('stat-participants').textContent = participants > 0 ? participants.toLocaleString() + '+' : '—';
+}
+
+function renderExportSummary() {
+  const byEffect = {};
+  const byDomain = {};
+  let totalN = 0, missingN = 0;
+
+  allCards.forEach(c => {
+    const ef = c.interaction_task?.effect_direction || 'unknown';
+    byEffect[ef] = (byEffect[ef] || 0) + 1;
+    const dom = c.interaction_task?.task_domain || 'Unknown';
+    byDomain[dom] = (byDomain[dom] || 0) + 1;
+    if (c.human_participants?.sample_size) totalN += c.human_participants.sample_size;
+    else missingN++;
+  });
+
+  const rows = allCards.map(c => {
+    const em = effectMeta(c.interaction_task?.effect_direction);
+    const { score } = getCompleteness(c);
+    return `<tr class="border-b border-slate-100 hover:bg-slate-50 text-sm">
+      <td class="py-2 px-3 font-medium text-slate-800 max-w-48 truncate">${c.paper_title}</td>
+      <td class="py-2 px-3 text-slate-500">${c.year || '—'}</td>
+      <td class="py-2 px-3"><span class="text-xs px-2 py-0.5 rounded-full font-medium ${em.badge}">${em.label}</span></td>
+      <td class="py-2 px-3 text-slate-500">${c.interaction_task?.task_domain || '—'}</td>
+      <td class="py-2 px-3 text-slate-500">${c.human_participants?.sample_size?.toLocaleString() || '—'}</td>
+      <td class="py-2 px-3">
+        <div class="flex items-center gap-1.5">
+          <div class="bar-bg w-16"><div class="bar-fill ${score >= 80 ? 'bar-high' : score >= 50 ? 'bar-med' : 'bar-low'}" style="width:${score}%"></div></div>
+          <span class="text-xs text-slate-400">${score}%</span>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('export-summary').innerHTML = `
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4 text-center">
+      ${Object.entries(byEffect).map(([k, v]) => {
+        const em = effectMeta(k);
+        return `<div class="rounded-lg p-2 ${em.badge}"><div class="text-lg font-bold">${v}</div><div class="text-xs">${em.label}</div></div>`;
+      }).join('')}
+      <div class="rounded-lg p-2 bg-slate-100 text-slate-700"><div class="text-lg font-bold">${totalN.toLocaleString()}</div><div class="text-xs">Total participants</div></div>
+    </div>
+    <div class="overflow-x-auto rounded-lg border border-slate-100">
+      <table class="w-full text-left min-w-[560px]">
+        <thead class="bg-slate-50">
+          <tr class="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+            <th class="py-2 px-3">Paper</th><th class="py-2 px-3">Year</th><th class="py-2 px-3">Effect</th>
+            <th class="py-2 px-3">Domain</th><th class="py-2 px-3">N</th><th class="py-2 px-3">Complete</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+}
+
+// ── Modal helpers ─────────────────────────────────────────────────────────────
+function openModal(id)  { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-icon').textContent = type === 'success' ? '✓' : '✗';
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── Keyboard close modals ────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeModal('card-modal');
+    closeModal('complete-modal');
+  }
+});
+</script>
+</body>
+</html>

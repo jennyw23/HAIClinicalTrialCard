@@ -1,0 +1,79 @@
+AI Clinical Trial Card: Collaborating with AI Agents: Field Experiments on Teamwork, Productivity, and Performance
+
+Authors: Harang Ju, Sinan Aral
+
+AI Model Details
+
+Provider: OpenAI
+
+Model Name and Version:
+
+GPT-4–based AI agents (exact configuration not fully specified)
+
+Access Method:
+
+AI agents embedded in a collaborative teamwork platform
+
+Fine-tuning:
+
+No task-specific fine-tuning reported
+
+Prompting / Configuration Parameters:
+
+Agents were assigned specific roles (e.g., ideation, coordination) via prompts
+
+Human Participant Profile
+
+Sample Size:
+
+776 participants
+
+Population / Expertise:
+
+Knowledge workers engaged in collaborative tasks
+
+AI / LLM Familiarity:
+
+Low-to-moderate
+
+Interaction and Task Design
+
+Task Description:
+
+Team-based problem-solving and creative tasks
+
+Interface:
+
+Collaborative digital platform
+
+AI Role / Degree of Autonomy:
+
+Semi-autonomous
+
+AI agents acted as teammates rather than passive tools
+
+Experimental Conditions:
+
+Human-only teams
+
+Human–AI hybrid teams
+
+Primary Outcome Measures:
+
+Team productivity
+
+Quality of outputs
+
+Main Effects:
+
+AI agents increased average team performance
+
+Also reshaped communication patterns and collaboration dynamics
+
+Notes on Interpretation
+
+Moves beyond “AI as a tool” to AI as a teammate
+
+Highlights second-order effects on coordination and teamwork
+
+Especially relevant for future organizational design questions

@@ -1,0 +1,117 @@
+AI Clinical Trial Card: The Effects of Generative AI on High-Skilled Work: Evidence from Three Field Experiments with Software Developers
+
+Authors: Ruoxi Cui et al. (Princeton / MIT / Microsoft)
+
+AI Model Details
+
+Provider: GitHub / OpenAI
+
+Model Name and Version:
+
+GitHub Copilot, powered by OpenAI’s Codex family of models
+
+Exact underlying model version is not explicitly specified
+
+Access Method:
+
+GitHub Copilot was integrated directly into developers’ existing programming environments
+
+Developers interacted with the AI through inline code suggestions as they wrote software
+
+Fine-tuning:
+
+Yes. Codex is fine-tuned on large-scale code repositories
+
+No additional fine-tuning specific to the experimental tasks was reported
+
+Prompting / Configuration Parameters:
+
+Default Copilot configuration
+
+Developers did not control temperature or decoding parameters
+
+Performance on Standard Benchmarks:
+
+Not reported
+
+The study treats Copilot as a deployed commercial tool rather than evaluating the base model
+
+Human Participant Profile
+
+Sample Size:
+
+Multiple field experiments; exact sample sizes vary by experiment and are reported separately in the paper
+
+Population / Expertise:
+
+Professional software developers
+
+Participants are highly skilled workers, performing complex, real-world programming tasks
+
+Domain Expertise:
+
+Software engineering and code development
+
+AI / LLM Familiarity:
+
+Likely low-to-moderate
+
+Experiments conducted during early diffusion of Copilot into professional developer workflows
+
+Training / Onboarding:
+
+Minimal onboarding
+
+Developers received access to Copilot but no extensive training or prompting instruction
+
+Interaction and Task Design
+
+Task Description:
+
+Three field experiments examining developer performance on realistic programming tasks
+
+Tasks were embedded in ongoing development work rather than isolated lab-style exercises
+
+Interface:
+
+Standard code editors with Copilot enabled
+
+AI suggestions appeared inline and could be accepted, edited, or ignored
+
+AI Role / Degree of Autonomy:
+
+Assistive
+
+Copilot suggested code snippets but did not autonomously commit or deploy code
+
+Experimental Conditions:
+
+Control: Copilot disabled
+
+Treatment: Copilot enabled
+
+Primary Outcome Measures:
+
+Productivity, such as speed or volume of code-related work
+
+Code quality, measured using task-specific or review-based metrics
+
+Main Effects:
+
+On average, access to Copilot increased developer productivity
+
+Effects on code quality were heterogeneous:
+
+Some tasks and developers experienced neutral or positive quality effects
+
+Others exhibited quality trade-offs alongside productivity gains
+
+Notes on Interpretation
+
+This paper extends earlier Copilot studies by focusing on high-skilled professional developers rather than short, synthetic tasks
+
+Results suggest that generative AI can improve productivity even for expert workers, but quality effects are not uniformly positive
+
+The findings underscore the importance of evaluating multiple outcome dimensions (speed and quality) when assessing AI assistance in skilled work
+
+Compared to lab experiments (e.g., Peng et al.), the field setting increases ecological validity but also introduces more heterogeneity in outcomes
