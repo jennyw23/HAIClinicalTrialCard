@@ -19,13 +19,17 @@ const upload = multer({
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-const CARDS_FILE = path.join(__dirname, 'cards.json');
+// On Vercel (serverless), the project filesystem is read-only.
+// Reads come from the bundled seed file; writes go to /tmp which
+// persists within a warm function instance but resets on cold start.
+const SEED_FILE = path.join(__dirname, 'cards.json');
+const TMP_FILE  = '/tmp/cards.json';
 
 function loadCards() {
+  const filePath = fs.existsSync(TMP_FILE) ? TMP_FILE : SEED_FILE;
   try {
-    const raw = fs.readFileSync(CARDS_FILE, 'utf8');
+    const raw = fs.readFileSync(filePath, 'utf8');
     const cards = JSON.parse(raw);
-    // Deduplicate by paper_title
     const seen = new Set();
     return cards.filter(c => {
       if (seen.has(c.paper_title)) return false;
@@ -38,7 +42,11 @@ function loadCards() {
 }
 
 function saveCards(cards) {
-  fs.writeFileSync(CARDS_FILE, JSON.stringify(cards, null, 2));
+  try {
+    fs.writeFileSync(TMP_FILE, JSON.stringify(cards, null, 2));
+  } catch (e) {
+    console.error('saveCards error:', e.message);
+  }
 }
 
 const EXTRACTION_PROMPT = `Extract information for an AI Clinical Trial Card from this research paper.
