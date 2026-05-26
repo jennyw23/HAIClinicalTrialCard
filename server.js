@@ -1,9 +1,10 @@
+require('dotenv').config({ path: '.env.local' });
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
-const Anthropic = require('@anthropic-ai/sdk');
-const fs = require('fs');
+const { Anthropic } = require('@anthropic-ai/sdk');
 const path = require('path');
+const { neon } = require('@neondatabase/serverless');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,35 +19,23 @@ const upload = multer({
 });
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const sql = neon(process.env.DATABASE_URL);
 
-// On Vercel (serverless), the project filesystem is read-only.
-// Reads come from the bundled seed file; writes go to /tmp which
-// persists within a warm function instance but resets on cold start.
-const SEED_FILE = path.join(__dirname, 'cards.json');
-const TMP_FILE  = '/tmp/cards.json';
-
-function loadCards() {
-  const filePath = fs.existsSync(TMP_FILE) ? TMP_FILE : SEED_FILE;
-  try {
-    const raw = fs.readFileSync(filePath, 'utf8');
-    const cards = JSON.parse(raw);
-    const seen = new Set();
-    return cards.filter(c => {
-      if (seen.has(c.paper_title)) return false;
-      seen.add(c.paper_title);
-      return true;
-    });
-  } catch {
-    return [];
-  }
+// Convert a `cards` row into the flat shape the frontend expects.
+function rowToCard(row) {
+  return {
+    paper_id: row.paper_id,
+    paper_title: row.paper_title,
+    ...row.data,
+    submitted_at: row.submitted_at,
+    updated_at: row.updated_at,
+  };
 }
 
-function saveCards(cards) {
-  try {
-    fs.writeFileSync(TMP_FILE, JSON.stringify(cards, null, 2));
-  } catch (e) {
-    console.error('saveCards error:', e.message);
-  }
+// Split incoming card payload into top-level columns vs JSONB data.
+function splitPayload(body) {
+  const { paper_id, paper_title, submitted_at, updated_at, ...data } = body;
+  return { paper_title, data };
 }
 
 const EXTRACTION_PROMPT = `Extract information for an AI Clinical Trial Card from this research paper.
@@ -91,9 +80,20 @@ Return a single valid JSON object with this exact schema (use null for missing i
 
 Return ONLY valid JSON. No markdown, no explanation, no code blocks.`;
 
-// ── GET all cards ────────────────────────────────────────────────────────────
-app.get('/api/cards', (req, res) => {
-  res.json(loadCards());
+// ── GET all published cards ──────────────────────────────────────────────────
+app.get('/api/cards', async (req, res) => {
+  try {
+    const rows = await sql`
+      SELECT paper_id, paper_title, data, submitted_at, updated_at
+      FROM cards
+      WHERE status = 'published'
+      ORDER BY paper_id
+    `;
+    res.json(rows.map(rowToCard));
+  } catch (err) {
+    console.error('GET /api/cards:', err.message);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ── POST parse PDF or text file ──────────────────────────────────────────────
@@ -158,53 +158,78 @@ app.post('/api/parse-text', async (req, res) => {
 });
 
 // ── POST add new card ────────────────────────────────────────────────────────
-app.post('/api/cards', (req, res) => {
+app.post('/api/cards', async (req, res) => {
   try {
-    const cards = loadCards();
-    const maxId = Math.max(0, ...cards.map(c => c.paper_id || 0));
-    const newCard = {
-      paper_id: maxId + 1,
-      submitted_at: new Date().toISOString(),
-      ...req.body,
-    };
-    cards.push(newCard);
-    saveCards(cards);
-    res.status(201).json(newCard);
+    const { paper_title, data } = splitPayload(req.body);
+    if (!paper_title) return res.status(400).json({ error: 'paper_title is required' });
+
+    const rows = await sql`
+      INSERT INTO cards (paper_title, data)
+      VALUES (${paper_title}, ${JSON.stringify(data)}::jsonb)
+      RETURNING paper_id, paper_title, data, submitted_at, updated_at
+    `;
+    res.status(201).json(rowToCard(rows[0]));
   } catch (err) {
+    if (err.message && err.message.includes('duplicate key')) {
+      return res.status(409).json({ error: 'A card with this title already exists' });
+    }
+    console.error('POST /api/cards:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
 
 // ── PATCH update existing card (for completing missing fields) ───────────────
-app.patch('/api/cards/:id', (req, res) => {
+app.patch('/api/cards/:id', async (req, res) => {
   try {
-    const cards = loadCards();
-    const idx = cards.findIndex(c => c.paper_id === parseInt(req.params.id));
-    if (idx === -1) return res.status(404).json({ error: 'Card not found' });
+    const id = parseInt(req.params.id);
+    const existing = await sql`SELECT * FROM cards WHERE paper_id = ${id}`;
+    if (!existing.length) return res.status(404).json({ error: 'Card not found' });
 
-    const existing = cards[idx];
+    const row = existing[0];
     const updates = req.body;
-    cards[idx] = {
-      ...existing,
+    const newData = {
+      ...row.data,
       ...updates,
-      ai_model: { ...existing.ai_model, ...updates.ai_model },
-      human_participants: { ...existing.human_participants, ...updates.human_participants },
-      interaction_task: { ...existing.interaction_task, ...updates.interaction_task },
-      updated_at: new Date().toISOString(),
+      ai_model:           { ...(row.data.ai_model || {}),           ...(updates.ai_model || {}) },
+      human_participants: { ...(row.data.human_participants || {}), ...(updates.human_participants || {}) },
+      interaction_task:   { ...(row.data.interaction_task || {}),   ...(updates.interaction_task || {}) },
     };
+    // Keep paper_title and lifecycle columns out of the JSONB blob.
+    delete newData.paper_id;
+    delete newData.paper_title;
+    delete newData.submitted_at;
+    delete newData.updated_at;
 
-    // Remove top-level duplicates if nested was updated
-    saveCards(cards);
-    res.json(cards[idx]);
+    const newTitle = updates.paper_title || row.paper_title;
+
+    const [updateRows] = await sql.transaction([
+      sql`UPDATE cards
+            SET paper_title = ${newTitle},
+                data        = ${JSON.stringify(newData)}::jsonb,
+                updated_at  = NOW()
+          WHERE paper_id = ${id}
+          RETURNING paper_id, paper_title, data, submitted_at, updated_at`,
+      sql`INSERT INTO card_edits (paper_id, changes)
+          VALUES (${id}, ${JSON.stringify(updates)}::jsonb)`,
+    ]);
+
+    res.json(rowToCard(updateRows[0]));
   } catch (err) {
+    console.error('PATCH /api/cards/:id:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
 
 // ── GET export cards as JSON or CSV ─────────────────────────────────────────
-app.get('/api/export', (req, res) => {
+app.get('/api/export', async (req, res) => {
   try {
-    const cards = loadCards();
+    const rows = await sql`
+      SELECT paper_id, paper_title, data, submitted_at, updated_at
+      FROM cards
+      WHERE status = 'published'
+      ORDER BY paper_id
+    `;
+    const cards = rows.map(rowToCard);
     const format = req.query.format || 'json';
 
     if (format === 'csv') {
@@ -226,7 +251,7 @@ app.get('/api/export', (req, res) => {
         return `"${s.replace(/"/g, '""')}"`;
       };
 
-      const rows = cards.map(c => [
+      const csvRows = cards.map(c => [
         c.paper_id,
         esc(c.paper_title), esc(c.authors), c.year || '', esc(c.study_type),
         esc(c.ai_model?.provider), esc(c.ai_model?.model_name),
@@ -245,7 +270,7 @@ app.get('/api/export', (req, res) => {
         esc(c.submitted_at), esc(c.updated_at),
       ].join(','));
 
-      const csv = [headers.join(','), ...rows].join('\n');
+      const csv = [headers.join(','), ...csvRows].join('\n');
       res.setHeader('Content-Type', 'text/csv');
       res.setHeader('Content-Disposition', 'attachment; filename="ai_clinical_trial_cards.csv"');
       return res.send(csv);
@@ -255,6 +280,7 @@ app.get('/api/export', (req, res) => {
     res.setHeader('Content-Disposition', 'attachment; filename="ai_clinical_trial_cards.json"');
     res.json(cards);
   } catch (err) {
+    console.error('GET /api/export:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
@@ -262,6 +288,9 @@ app.get('/api/export', (req, res) => {
 app.listen(PORT, () => {
   console.log(`\nAI Clinical Trial Cards running at http://localhost:${PORT}\n`);
   if (!process.env.ANTHROPIC_API_KEY) {
-    console.warn('Warning: ANTHROPIC_API_KEY not set — PDF/text parsing will not work\n');
+    console.warn('Warning: ANTHROPIC_API_KEY not set — PDF/text parsing will not work');
+  }
+  if (!process.env.DATABASE_URL) {
+    console.warn('Warning: DATABASE_URL not set — database operations will fail');
   }
 });
