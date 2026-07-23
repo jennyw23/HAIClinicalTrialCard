@@ -1,4 +1,5 @@
 require('dotenv').config({ path: '.env.local' });
+require('dotenv').config({ path: '.env' });
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
@@ -34,8 +35,22 @@ function rowToCard(row) {
 
 // Split incoming card payload into top-level columns vs JSONB data.
 function splitPayload(body) {
-  const { paper_id, paper_title, submitted_at, updated_at, ...data } = body;
-  return { paper_title, data };
+  const {
+    paper_id,
+    paper_title,
+    submitted_at,
+    updated_at,
+    submitted_by,
+    created_by,
+    status,
+    ...data
+  } = body;
+  return {
+    paper_title,
+    created_by: created_by || submitted_by || null,
+    status: status || 'published',
+    data,
+  };
 }
 
 const EXTRACTION_PROMPT = `Extract information for an AI Clinical Trial Card from this research paper.
@@ -160,12 +175,17 @@ app.post('/api/parse-text', async (req, res) => {
 // ── POST add new card ────────────────────────────────────────────────────────
 app.post('/api/cards', async (req, res) => {
   try {
-    const { paper_title, data } = splitPayload(req.body);
+    const { paper_title, data, created_by, status } = splitPayload(req.body);
     if (!paper_title) return res.status(400).json({ error: 'paper_title is required' });
 
     const rows = await sql`
-      INSERT INTO cards (paper_title, data)
-      VALUES (${paper_title}, ${JSON.stringify(data)}::jsonb)
+      INSERT INTO cards (paper_title, data, created_by, status)
+      VALUES (
+        ${paper_title},
+        ${JSON.stringify(data)}::jsonb,
+        ${created_by},
+        ${status}
+      )
       RETURNING paper_id, paper_title, data, submitted_at, updated_at
     `;
     res.status(201).json(rowToCard(rows[0]));

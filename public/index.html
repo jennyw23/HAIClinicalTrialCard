@@ -107,6 +107,22 @@
     /* ── Sticky nav shadow on scroll ── */
     #navbar { transition: box-shadow 0.2s; }
     #navbar.scrolled { box-shadow: 0 1px 16px rgba(0,0,0,0.1); }
+
+    /* ── Spreadsheet / table view ── */
+    .view-toggle { display: inline-flex; background: #f1f5f9; border-radius: 0.5rem; padding: 0.2rem; gap: 0.15rem; }
+    .view-toggle button { padding: 0.35rem 0.85rem; font-size: 0.8rem; font-weight: 600; color: #64748b; border-radius: 0.4rem; transition: all 0.15s; }
+    .view-toggle button.active { background: white; color: #1e3a5f; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .sheet-wrap { overflow: auto; max-height: min(70vh, 720px); border: 1px solid #d1d5db; border-radius: 0.5rem; background: white; }
+    .sheet-table { border-collapse: separate; border-spacing: 0; font-size: 0.75rem; min-width: 1600px; }
+    .sheet-table th, .sheet-table td { border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; padding: 0.45rem 0.6rem; vertical-align: top; white-space: nowrap; max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
+    .sheet-table th { position: sticky; top: 0; z-index: 2; background: #f8fafc; color: #475569; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.65rem; }
+    .sheet-table th:first-child, .sheet-table td:first-child { position: sticky; left: 0; z-index: 1; background: white; font-weight: 600; color: #64748b; min-width: 2.5rem; text-align: center; }
+    .sheet-table th:first-child { z-index: 3; background: #f8fafc; }
+    .sheet-table th:nth-child(2), .sheet-table td:nth-child(2) { position: sticky; left: 2.5rem; z-index: 1; background: white; min-width: 220px; max-width: 280px; white-space: normal; }
+    .sheet-table th:nth-child(2) { z-index: 3; background: #f8fafc; }
+    .sheet-table tr:hover td { background: #f0f7ff; }
+    .sheet-table tr:hover td:first-child, .sheet-table tr:hover td:nth-child(2) { background: #e8f1fc; }
+    .sheet-table td.wrap { white-space: normal; max-width: 280px; }
   </style>
 </head>
 
@@ -124,6 +140,7 @@
       </div>
       <div class="hidden md:flex items-center gap-1">
         <a href="#browse" class="px-3 py-1.5 text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-50 rounded-md font-medium transition-colors">Browse Cards</a>
+        <a href="#browse" onclick="setBrowseView('table')" class="px-3 py-1.5 text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-50 rounded-md font-medium transition-colors">Table view</a>
         <a href="#submit" class="px-3 py-1.5 text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-50 rounded-md font-medium transition-colors">Submit</a>
         <a href="#submit" class="ml-2 px-4 py-1.5 bg-[#1e3a5f] text-white text-sm font-semibold rounded-lg hover:bg-[#162d4a] transition-colors">+ Submit Card</a>
       </div>
@@ -168,7 +185,13 @@
         <span class="text-xs font-bold uppercase tracking-widest text-[#2563eb] mb-2 block">The Evidence</span>
         <h2 class="text-3xl font-bold text-slate-900">Browse AI Clinical Trial Cards</h2>
       </div>
-      <div id="results-count" class="text-sm text-slate-500 font-medium"></div>
+      <div class="flex flex-wrap items-center gap-3">
+        <div class="view-toggle" role="group" aria-label="View mode">
+          <button type="button" id="view-cards-btn" class="active" onclick="setBrowseView('cards')">Cards</button>
+          <button type="button" id="view-table-btn" onclick="setBrowseView('table')">Table</button>
+        </div>
+        <div id="results-count" class="text-sm text-slate-500 font-medium"></div>
+      </div>
     </div>
 
     <!-- Search + sort row -->
@@ -232,6 +255,43 @@
       <div class="col-span-full flex flex-col items-center py-16 text-slate-400">
         <div class="spin mb-4"></div>
         <p class="text-sm">Loading cards...</p>
+      </div>
+    </div>
+
+    <!-- Spreadsheet-style table (hidden until Table view) -->
+    <div id="sheet-view" class="hidden fade-in">
+      <p class="text-xs text-slate-500 mb-2">Scroll horizontally to see all fields — like a spreadsheet. Click a row to open the full card.</p>
+      <div class="sheet-wrap">
+        <table class="sheet-table w-full">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Paper title</th>
+              <th>Year</th>
+              <th>Authors</th>
+              <th>Study type</th>
+              <th>Publication type</th>
+              <th>Sample N</th>
+              <th>Population</th>
+              <th>Expertise</th>
+              <th>AI familiarity</th>
+              <th>Training</th>
+              <th>Period</th>
+              <th>Provider</th>
+              <th>Model</th>
+              <th>Model type</th>
+              <th>Access</th>
+              <th>Task domain</th>
+              <th>AI role</th>
+              <th>Conditions</th>
+              <th>Outcomes</th>
+              <th>Effect</th>
+              <th>Effects summary</th>
+              <th>Mechanisms</th>
+            </tr>
+          </thead>
+          <tbody id="sheet-tbody"></tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -504,8 +564,10 @@
 // ── State ───────────────────────────────────────────────────────────────────
 let allCards = [];
 let activeFilters = { effect: '', role: '', expertise: '', domain: '', study: '' };
+let browseView = 'cards'; // 'cards' | 'table'
 let selectedFile = null;
 let completingCardId = null;
+let filteredCardsCache = [];
 
 // ── Key fields for completeness check ───────────────────────────────────────
 const COMPLETENESS_FIELDS = [
@@ -733,8 +795,18 @@ function applyFilters() {
     return 0;
   });
 
-  renderCards(result);
+  filteredCardsCache = result;
+  renderBrowse(result);
   document.getElementById('results-count').textContent = `${result.length} of ${allCards.length} cards`;
+}
+
+function setBrowseView(view) {
+  browseView = view === 'table' ? 'table' : 'cards';
+  document.getElementById('view-cards-btn').classList.toggle('active', browseView === 'cards');
+  document.getElementById('view-table-btn').classList.toggle('active', browseView === 'table');
+  document.getElementById('card-grid').classList.toggle('hidden', browseView !== 'cards');
+  document.getElementById('sheet-view').classList.toggle('hidden', browseView !== 'table');
+  renderBrowse(filteredCardsCache);
 }
 
 function clearFilters() {
@@ -760,6 +832,61 @@ function populateFilterOptions() {
 }
 
 // ── Render ────────────────────────────────────────────────────────────────────
+function cell(v) {
+  if (v == null || v === '') return '—';
+  if (Array.isArray(v)) return v.length ? v.join('; ') : '—';
+  return String(v);
+}
+
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function renderBrowse(cards) {
+  if (browseView === 'table') renderSheetTable(cards);
+  else renderCards(cards);
+}
+
+function renderSheetTable(cards) {
+  const tbody = document.getElementById('sheet-tbody');
+  if (!cards || cards.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="23" class="text-center text-slate-400 py-8">No cards match your filters.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = cards.map(c => {
+    const authors = Array.isArray(c.authors) ? c.authors.join(', ') : (c.authors || '');
+    return `<tr class="cursor-pointer" onclick="showCardModal(${c.paper_id})" title="Open card">
+      <td>${c.paper_id}</td>
+      <td class="wrap">${escHtml(c.paper_title || '')}</td>
+      <td>${escHtml(cell(c.year))}</td>
+      <td class="wrap" title="${escHtml(authors)}">${escHtml(authors || '—')}</td>
+      <td>${escHtml(cell(c.study_type))}</td>
+      <td>${escHtml(cell(c.publication_type))}</td>
+      <td>${escHtml(cell(c.human_participants?.sample_size))}</td>
+      <td class="wrap" title="${escHtml(cell(c.human_participants?.population))}">${escHtml(cell(c.human_participants?.population))}</td>
+      <td>${escHtml(cell(c.human_participants?.expertise_level))}</td>
+      <td>${escHtml(cell(c.human_participants?.ai_familiarity))}</td>
+      <td>${escHtml(cell(c.human_participants?.training_provided))}</td>
+      <td>${escHtml(cell(c.human_participants?.data_collection_period))}</td>
+      <td>${escHtml(cell(c.ai_model?.provider))}</td>
+      <td>${escHtml(cell(c.ai_model?.model_name))}</td>
+      <td>${escHtml(cell(c.ai_model?.model_type))}</td>
+      <td class="wrap">${escHtml(cell(c.ai_model?.access_method))}</td>
+      <td class="wrap">${escHtml(cell(c.interaction_task?.task_domain))}</td>
+      <td>${escHtml(cell(c.interaction_task?.ai_role))}</td>
+      <td class="wrap">${escHtml(cell(c.interaction_task?.experimental_conditions))}</td>
+      <td class="wrap">${escHtml(cell(c.interaction_task?.primary_outcomes))}</td>
+      <td>${escHtml(cell(c.interaction_task?.effect_direction))}</td>
+      <td class="wrap" title="${escHtml(cell(c.interaction_task?.main_effects_summary))}">${escHtml(cell(c.interaction_task?.main_effects_summary))}</td>
+      <td class="wrap" title="${escHtml(cell(c.author_proposed_mechanisms))}">${escHtml(cell(c.author_proposed_mechanisms))}</td>
+    </tr>`;
+  }).join('');
+}
+
 function renderCards(cards) {
   const grid = document.getElementById('card-grid');
   if (!cards || cards.length === 0) {
