@@ -813,6 +813,86 @@ let allCards = [];
 let activeFilters = { effect: '', role: '', expertise: '', domain: '', study: '' };
 let selectedFile = null;
 let completingCardId = null;
+
+/** All Google Form / CSV columns for the Database spreadsheet (audit view). */
+const DB_TABLE_COLUMNS = [
+  'Timestamp',
+  'Email Address',
+  'Study ID',
+  'Coder Name',
+  'Needs Review?',
+  'Paper Title',
+  'Paper URL',
+  'Authors (comma-separated)',
+  'Year',
+  'Publication Type',
+  'Publication Venue (ex. HBS Working Paper Nature NBER arXiv)',
+  'Methodology',
+  'Randomized?',
+  'Sample Size (N)',
+  'Describe participant population and relevant background. (ex. Entrepreneurs, MBA students, Software developers, High school students)',
+  'Expertise Level',
+  'AI Familiarity',
+  'Training Provided',
+  'Training / Instructions Description',
+  'Not found in Methods? - human',
+  'Provider',
+  'Model Name',
+  'Model Type',
+  'Fine-Tuned?',
+  'Access Method',
+  'Key Parameters',
+  'Benchmarks Reported',
+  'Guardrails Present?',
+  'AI Configuration / Setup',
+  'Not found in Methods? - model',
+  'Task Domain',
+  'Task Description',
+  'AI Role',
+  'Interaction Notes',
+  'Comparison Conditions',
+  'Not found in Methods? - task',
+  'Outcome Metrics',
+  'Effect Size',
+  'Effect Direction',
+  'Outcome Standard Error',
+  'Main Effects Summary',
+  'Evidence of Heterogeneous Effects?',
+  'Who Benefited More / Less?',
+  'Author-Proposed Mechanisms',
+  'Not found in Methods? - results',
+  'What human characteristics may explain outcomes?',
+  'What AI characteristics may explain outcomes?',
+  'What workflow/task features may explain outcomes?',
+  'Anything noteworthy or theoretically interesting.',
+  'Data Collection Period',
+  'In methods? - Human',
+  'In methods? - Metada',
+  'In methods? - AI',
+  'In methods? - Task',
+  'In methods? - Outcome',
+];
+
+/** Short labels for wide form headers in the table. */
+const DB_TABLE_LABELS = {
+  'Publication Venue (ex. HBS Working Paper Nature NBER arXiv)': 'Publication Venue',
+  'Describe participant population and relevant background. (ex. Entrepreneurs, MBA students, Software developers, High school students)': 'Population',
+  'Authors (comma-separated)': 'Authors',
+  'Training / Instructions Description': 'Training Description',
+  'Not found in Methods? - human': 'Not found (human)',
+  'Not found in Methods? - model': 'Not found (model)',
+  'Not found in Methods? - task': 'Not found (task)',
+  'Not found in Methods? - results': 'Not found (results)',
+  'What human characteristics may explain outcomes?': 'Human characteristics',
+  'What AI characteristics may explain outcomes?': 'AI characteristics',
+  'What workflow/task features may explain outcomes?': 'Workflow features',
+  'Anything noteworthy or theoretically interesting.': 'Noteworthy',
+  'Evidence of Heterogeneous Effects?': 'Heterogeneous Effects?',
+  'Who Benefited More / Less?': 'Who Benefited',
+  'Author-Proposed Mechanisms': 'Author Mechanisms',
+  'In methods? - Metada': 'In methods? - Metadata',
+};
+
 let filteredCardsCache = [];
 let mapState = { x: 'interaction_task.task_domain', y: 'human_participants.expertise_level', selected: null };
 let compareState = { a: null, b: null, highlight: true };
@@ -876,6 +956,43 @@ const NEAR_TWIN_FIELDS = [
   'interaction_task.experimental_conditions', 'interaction_task.primary_outcomes',
   'interaction_task.prompting_strategy',
 ];
+
+// ── Form option lists (mounted into empty containers) ────────────────────────
+const EXPERTISE_LEVELS = ['Low', 'Low to Moderate', 'Moderate', 'Moderate to High', 'High', 'Heterogeneous', 'Not Reported'];
+const FORM_OPTIONS = {
+  methodology: [
+    'Field Experiment', 'Randomized Controlled Trial (RCT)', 'Lab Experiment', 'Survey Experiment',
+    'Observational Study', 'Natural Experiment', 'Case Study', 'Qualitative Study', 'Mixed Methods',
+    'Meta-analysis', 'Review Paper', 'Not Reported',
+  ],
+  human_not_found: ['Sample Size', 'Population', 'Expertise Level', 'Domain Expertise', 'AI Familiarity', 'Training Provided'],
+  provider: ['OpenAI', 'Anthropic', 'Google', 'Microsoft', 'Meta', 'Mistral', 'Open-source', 'Multiple', 'Not Reported', 'Other'],
+  model_type: ['Chatbot', 'Tutor', 'Copilot', 'Agent', 'Workflow Assistant', 'Decision Support System', 'Other'],
+  access_method: [
+    'Chat Interface', 'API', 'IDE Integration', 'Embedded Workflow', 'Web App', 'Mobile App',
+    'Voice Interface', 'Multimodal', 'Not Reported',
+  ],
+  model_not_found: ['Provider', 'Model Name', 'Fine-Tuned', 'Access Method', 'Key Parameters', 'Benchmarks Reported', 'Config/Prompting'],
+  task_domain: [
+    'Software Development', 'Education', 'Healthcare', 'Entrepreneurship', 'Writing', 'Knowledge Work',
+    'Teamwork & Collaboration', 'Customer Service', 'Research', 'Decision-Making', 'Design', 'Marketing',
+    'Operations', 'Finance',
+  ],
+  comparison_conditions: [
+    'No AI', 'AI Only', 'Human + AI', 'Human-only Teams', 'Human-AI Teams',
+    'AI + Process Overview', 'Copilot Enabled', 'Copilot Disabled', 'Other',
+  ],
+  task_not_found: ['Task Domain', 'Task Description', 'AI Role', 'Interaction', 'Comparison Conditions'],
+  outcome_metrics: [
+    'Performance Quality', 'Productivity', 'Accuracy', 'Creativity', 'Learning Outcomes', 'Confidence',
+    'Trust', 'Satisfaction', 'Collaboration Quality', 'Speed / Time', 'Revenue / Business Outcomes',
+    'Retention', 'Self-reported Outcomes',
+  ],
+  results_not_found: [
+    'Outcome Metrics', 'Effect Size', 'Effect Direction', 'Who Benefited', 'Main Effects Summary',
+    'Heterogeneous Effects', 'Mechanisms',
+  ],
+};
 
 // ── Key fields for completeness check ───────────────────────────────────────
 const COMPLETENESS_FIELDS = [
