@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Clinical Trial Cards</title>
+  <title>HAI Clinical Trial Cards</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -136,7 +136,7 @@
         <div class="w-8 h-8 rounded-lg bg-[#1e3a5f] flex items-center justify-center flex-shrink-0">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="white"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
         </div>
-        <span class="font-bold text-[#1e3a5f] text-base tracking-tight">AI Clinical Trial Cards</span>
+        <span class="font-bold text-[#1e3a5f] text-base tracking-tight">HAI Clinical Trial Cards</span>
       </div>
       <div class="hidden md:flex items-center gap-1">
         <a href="#browse" class="px-3 py-1.5 text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-50 rounded-md font-medium transition-colors">Browse Cards</a>
@@ -183,7 +183,7 @@
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 fade-in">
       <div>
         <span class="text-xs font-bold uppercase tracking-widest text-[#2563eb] mb-2 block">The Evidence</span>
-        <h2 class="text-3xl font-bold text-slate-900">Browse AI Clinical Trial Cards</h2>
+        <h2 class="text-3xl font-bold text-slate-900">Browse HAI Clinical Trial Cards</h2>
       </div>
       <div class="flex flex-wrap items-center gap-3">
         <div class="view-toggle" role="group" aria-label="View mode">
@@ -302,7 +302,7 @@
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center mb-10 fade-in">
       <span class="text-xs font-bold uppercase tracking-widest text-[#2563eb] mb-2 block">Contribute</span>
-      <h2 class="text-3xl font-bold text-slate-900 mb-3">Submit an AI Clinical Trial Card</h2>
+      <h2 class="text-3xl font-bold text-slate-900 mb-3">Submit an HAI Clinical Trial Card</h2>
       <p class="text-slate-600 text-sm max-w-xl mx-auto">Upload a paper PDF or paste LaTeX source to auto-fill the card using AI, then review and submit. You can also enter details manually.</p>
     </div>
 
@@ -488,7 +488,7 @@
 
       <div id="form-error" class="text-red-600 text-sm mb-3 hidden"></div>
       <button id="submit-btn" onclick="submitCard()" class="w-full py-3 bg-[#1e3a5f] text-white font-bold rounded-xl hover:bg-[#162d4a] transition-colors text-sm tracking-wide shadow">
-        Submit AI Clinical Trial Card
+        Submit HAI Clinical Trial Card
       </button>
       <p class="text-xs text-slate-400 text-center mt-2">Submissions are added to the public database and available for meta-analysis export.</p>
     </div>
@@ -504,7 +504,7 @@
           <div class="w-7 h-7 rounded-md bg-white/15 flex items-center justify-center">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="white"><rect x="1" y="1" width="5" height="5" rx="0.75"/><rect x="8" y="1" width="5" height="5" rx="0.75"/><rect x="1" y="8" width="5" height="5" rx="0.75"/><rect x="8" y="8" width="5" height="5" rx="0.75"/></svg>
           </div>
-          <span class="font-bold text-sm">AI Clinical Trial Cards</span>
+          <span class="font-bold text-sm">HAI Clinical Trial Cards</span>
         </div>
         <p class="text-blue-200 text-xs leading-relaxed">Standardizing human–AI collaboration research to enable evidence-based governance of AI deployment.</p>
       </div>
@@ -720,7 +720,7 @@ async function submitCard() {
   } catch (e) {
     showFormError('Submit failed: ' + e.message);
   } finally {
-    btn.disabled = false; btn.textContent = 'Submit AI Clinical Trial Card';
+    btn.disabled = false; btn.textContent = 'Submit HAI Clinical Trial Card';
   }
 }
 
