@@ -130,6 +130,57 @@
     .sheet-table tr:hover td { background: #f0f7ff; }
     .sheet-table tr:hover td:first-child, .sheet-table tr:hover td:nth-child(2) { background: #e8f1fc; }
     .sheet-table td.wrap { white-space: normal; max-width: 280px; }
+
+    /* ── Design-space map ── */
+    #design-map, #compare { scroll-margin-top: 4rem; }
+    .feature-controls { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end; background: white; border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 1rem; }
+    .feature-field { flex: 1 1 210px; max-width: 320px; }
+    .feature-field label { display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.3rem; }
+    .feature-action { height: 2.5rem; padding: 0 0.9rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; background: white; color: #475569; font-size: 0.8rem; font-weight: 600; transition: all 0.15s; }
+    .feature-action:hover { border-color: #1e3a5f; color: #1e3a5f; background: #f8fafc; }
+    .feature-action.primary { border-color: #1e3a5f; background: #1e3a5f; color: white; }
+    .feature-action.primary:hover { background: #162d4a; color: white; }
+    .feature-action:disabled { opacity: 0.45; cursor: not-allowed; }
+    .map-legend { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin-left: auto; color: #64748b; font-size: 0.75rem; }
+    .map-legend span { display: inline-flex; align-items: center; gap: 0.35rem; }
+    .map-legend i { width: 0.75rem; height: 0.75rem; border-radius: 0.2rem; display: inline-block; }
+    .map-scroll { overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 0.75rem; background: white; padding: 1rem; }
+    .design-map-grid { display: grid; gap: 0.4rem; min-width: 720px; }
+    .map-corner { display: flex; align-items: flex-end; justify-content: flex-end; padding: 0 0.4rem 0.35rem 0; color: #94a3b8; font-size: 0.65rem; font-weight: 700; line-height: 1.25; text-align: right; text-transform: uppercase; letter-spacing: 0.04em; }
+    .map-column-label { display: flex; align-items: flex-end; justify-content: center; min-height: 2.75rem; padding: 0.25rem; color: #475569; font-size: 0.72rem; font-weight: 700; line-height: 1.2; text-align: center; }
+    .map-row-label { display: flex; align-items: center; justify-content: flex-end; padding-right: 0.55rem; color: #334155; font-size: 0.78rem; font-weight: 700; line-height: 1.2; text-align: right; }
+    .map-cell { min-height: 3.6rem; border: 1px solid #dbe3ec; border-radius: 0.55rem; display: flex; align-items: center; justify-content: center; color: #1e293b; font-size: 0.95rem; font-weight: 800; transition: transform 0.15s, box-shadow 0.15s; }
+    button.map-cell:not(.empty):hover { transform: translateY(-2px); box-shadow: 0 9px 18px -12px rgba(15, 23, 42, 0.65); }
+    .map-cell.empty { background: repeating-linear-gradient(45deg, #fff, #fff 6px, #f1f5f9 6px, #f1f5f9 12px); border-style: dashed; border-color: #cbd5e1; color: #94a3b8; font-size: 0.62rem; letter-spacing: 0.08em; }
+    .map-cell.selected { box-shadow: 0 0 0 2px #1e3a5f; }
+    .map-total { display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 0.7rem; font-weight: 700; }
+    .map-study-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 0.75rem; align-items: center; width: 100%; padding: 0.7rem 0; border-top: 1px solid #f1f5f9; text-align: left; }
+    .map-study-row:first-child { border-top: 0; }
+    .map-study-row:hover .map-study-title { color: #1e3a5f; }
+    .map-study-id { color: #94a3b8; font-size: 0.7rem; font-weight: 700; }
+    .map-study-title { color: #334155; font-size: 0.82rem; font-weight: 600; line-height: 1.35; }
+
+    /* ── Pairwise comparison ── */
+    .comparison-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; align-items: start; }
+    .compare-card { overflow: hidden; border: 1px solid #e2e8f0; border-radius: 0.85rem; background: white; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04); }
+    .compare-card-header { padding: 1rem; border-bottom: 1px solid #e2e8f0; }
+    .compare-section { padding: 0.85rem 1rem 1rem; border-top: 1px solid #f1f5f9; }
+    .compare-section:first-of-type { border-top: 0; }
+    .compare-section-title { margin-bottom: 0.5rem; font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; }
+    .compare-field { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); gap: 0.75rem; margin: 0 -0.4rem; padding: 0.42rem 0.4rem; border-radius: 0.4rem; }
+    .compare-field.same { opacity: 0.5; }
+    .compare-field.diff { background: #fffbeb; box-shadow: inset 3px 0 0 #d97706; }
+    .compare-label { color: #94a3b8; font-size: 0.7rem; font-weight: 600; line-height: 1.35; }
+    .compare-value { min-width: 0; color: #334155; font-size: 0.8rem; font-weight: 600; line-height: 1.4; overflow-wrap: anywhere; }
+    .compare-empty { padding: 2.5rem 1rem; border: 1px dashed #cbd5e1; border-radius: 0.75rem; color: #94a3b8; text-align: center; font-size: 0.85rem; }
+    @media (max-width: 860px) {
+      .comparison-grid { grid-template-columns: 1fr; }
+      .map-legend { width: 100%; margin-left: 0; }
+    }
+    @media (max-width: 520px) {
+      .compare-field { grid-template-columns: 1fr; gap: 0.15rem; }
+      .feature-field { max-width: none; }
+    }
   </style>
 </head>
 
@@ -145,11 +196,13 @@
         </div>
         <span class="font-bold text-[#1e3a5f] text-base tracking-tight">HAI Clinical Trial Cards</span>
       </div>
-      <div class="hidden md:flex items-center gap-1">
-        <a href="#browse" class="px-3 py-1.5 text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-50 rounded-md font-medium transition-colors">Browse Cards</a>
-        <a href="#database" class="px-3 py-1.5 text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-50 rounded-md font-medium transition-colors">Database</a>
-        <a href="#submit" class="px-3 py-1.5 text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-50 rounded-md font-medium transition-colors">Submit</a>
-        <a href="#submit" class="ml-2 px-4 py-1.5 bg-[#1e3a5f] text-white text-sm font-semibold rounded-lg hover:bg-[#162d4a] transition-colors">+ Submit Card</a>
+      <div class="hidden md:flex items-center gap-0.5">
+        <a href="#browse" class="px-2 py-1.5 text-xs lg:text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-50 rounded-md font-medium transition-colors">Browse</a>
+        <a href="#design-map" class="px-2 py-1.5 text-xs lg:text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-50 rounded-md font-medium transition-colors">Design Map</a>
+        <a href="#compare" class="px-2 py-1.5 text-xs lg:text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-50 rounded-md font-medium transition-colors">Compare</a>
+        <a href="#browse" onclick="setBrowseView('table')" class="px-2 py-1.5 text-xs lg:text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-50 rounded-md font-medium transition-colors">Table</a>
+        <a href="#submit" class="px-2 py-1.5 text-xs lg:text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-50 rounded-md font-medium transition-colors">Submit</a>
+        <a href="#submit" class="ml-1 px-3 py-1.5 bg-[#1e3a5f] text-white text-xs lg:text-sm font-semibold rounded-lg hover:bg-[#162d4a] transition-colors">+ Submit Card</a>
       </div>
     </div>
   </div>
@@ -281,6 +334,88 @@
         </thead>
         <tbody id="db-tbody"></tbody>
       </table>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ DESIGN SPACE MAP -->
+<section id="design-map" class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mb-8 fade-in">
+      <span class="text-xs font-bold uppercase tracking-widest text-[#2563eb] mb-2 block">Explore the Evidence</span>
+      <h2 class="text-3xl font-bold text-slate-900 mb-3">Design-Space Map</h2>
+      <p class="text-slate-600 text-sm leading-relaxed">Choose two card dimensions to see where studies cluster and where combinations remain untested. Filled cells show the number of studies; hatched cells mark gaps in the current evidence base.</p>
+    </div>
+
+    <div class="feature-controls mb-5 fade-in">
+      <div class="feature-field">
+        <label for="map-y-select">Rows (Y)</label>
+        <select id="map-y-select" class="inp h-10"></select>
+      </div>
+      <button id="map-swap" type="button" class="feature-action" title="Swap axes">Swap axes</button>
+      <div class="feature-field">
+        <label for="map-x-select">Columns (X)</label>
+        <select id="map-x-select" class="inp h-10"></select>
+      </div>
+      <div class="map-legend">
+        <span><i style="background:#dbeafe"></i>Fewer</span>
+        <span><i style="background:#1e3a5f"></i>More studies</span>
+        <span><i style="background:repeating-linear-gradient(45deg,#fff,#fff 3px,#e2e8f0 3px,#e2e8f0 6px);border:1px dashed #cbd5e1"></i>Gap</span>
+      </div>
+    </div>
+
+    <div class="map-scroll fade-in">
+      <div id="design-map-grid" class="design-map-grid">
+        <div class="text-sm text-slate-400 py-8">Loading map...</div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5 fade-in">
+      <div class="rounded-xl border border-blue-200 bg-blue-50 p-4">
+        <p class="text-xs font-bold uppercase tracking-wider text-blue-700 mb-1">Most crowded</p>
+        <p id="map-peak" class="text-sm text-blue-950"></p>
+      </div>
+      <div class="rounded-xl border border-amber-200 bg-amber-50 p-4">
+        <p class="text-xs font-bold uppercase tracking-wider text-amber-700 mb-1">Notable gap</p>
+        <p id="map-gap" class="text-sm text-amber-950"></p>
+      </div>
+    </div>
+
+    <div id="map-detail" class="mt-5 rounded-xl border border-slate-200 bg-white p-4 fade-in">
+      <p class="text-sm text-slate-400">Select a filled cell to list the studies in that part of the design space.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ COMPARE STUDIES -->
+<section id="compare" class="py-20 bg-slate-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mb-8 fade-in">
+      <span class="text-xs font-bold uppercase tracking-widest text-[#2563eb] mb-2 block">Pairwise Comparison</span>
+      <h2 class="text-3xl font-bold text-slate-900 mb-3">Compare Studies</h2>
+      <p class="text-slate-600 text-sm leading-relaxed">Place two cards side by side. Matching fields fade back while differing fields are highlighted, making consequential design choices easier to isolate. Use the near-twin button to find the study most similar to Study A.</p>
+    </div>
+
+    <div class="feature-controls mb-5 fade-in">
+      <div class="feature-field">
+        <label for="compare-a-select">Study A</label>
+        <select id="compare-a-select" class="inp h-10"></select>
+      </div>
+      <div class="feature-field">
+        <label for="compare-b-select">Study B</label>
+        <select id="compare-b-select" class="inp h-10"></select>
+      </div>
+      <button id="near-twin-btn" type="button" class="feature-action primary">Find A's near-twin</button>
+      <label class="ml-auto inline-flex items-center gap-2 h-10 text-sm font-medium text-slate-600 whitespace-nowrap">
+        <input id="compare-highlight" type="checkbox" checked class="h-4 w-4 accent-[#1e3a5f]" />
+        Highlight differences
+      </label>
+    </div>
+
+    <div id="comparison-summary" class="mb-4 fade-in"></div>
+    <div class="comparison-grid fade-in">
+      <div id="compare-card-a" class="compare-empty">Loading studies...</div>
+      <div id="compare-card-b" class="compare-empty">Loading studies...</div>
     </div>
   </div>
 </section>
@@ -678,122 +813,69 @@ let allCards = [];
 let activeFilters = { effect: '', role: '', expertise: '', domain: '', study: '' };
 let selectedFile = null;
 let completingCardId = null;
+let filteredCardsCache = [];
+let mapState = { x: 'interaction_task.task_domain', y: 'human_participants.expertise_level', selected: null };
+let compareState = { a: null, b: null, highlight: true };
 
-/** All Google Form / CSV columns for the Database spreadsheet (audit view). */
-const DB_TABLE_COLUMNS = [
-  'Timestamp',
-  'Email Address',
-  'Study ID',
-  'Coder Name',
-  'Needs Review?',
-  'Paper Title',
-  'Paper URL',
-  'Authors (comma-separated)',
-  'Year',
-  'Publication Type',
-  'Publication Venue (ex. HBS Working Paper Nature NBER arXiv)',
-  'Methodology',
-  'Randomized?',
-  'Sample Size (N)',
-  'Describe participant population and relevant background. (ex. Entrepreneurs, MBA students, Software developers, High school students)',
-  'Expertise Level',
-  'AI Familiarity',
-  'Training Provided',
-  'Training / Instructions Description',
-  'Not found in Methods? - human',
-  'Provider',
-  'Model Name',
-  'Model Type',
-  'Fine-Tuned?',
-  'Access Method',
-  'Key Parameters',
-  'Benchmarks Reported',
-  'Guardrails Present?',
-  'AI Configuration / Setup',
-  'Not found in Methods? - model',
-  'Task Domain',
-  'Task Description',
-  'AI Role',
-  'Interaction Notes',
-  'Comparison Conditions',
-  'Not found in Methods? - task',
-  'Outcome Metrics',
-  'Effect Size',
-  'Effect Direction',
-  'Outcome Standard Error',
-  'Main Effects Summary',
-  'Evidence of Heterogeneous Effects?',
-  'Who Benefited More / Less?',
-  'Author-Proposed Mechanisms',
-  'Not found in Methods? - results',
-  'What human characteristics may explain outcomes?',
-  'What AI characteristics may explain outcomes?',
-  'What workflow/task features may explain outcomes?',
-  'Anything noteworthy or theoretically interesting.',
-  'Data Collection Period',
-  'In methods? - Human',
-  'In methods? - Metada',
-  'In methods? - AI',
-  'In methods? - Task',
-  'In methods? - Outcome',
+const MAP_DIMENSIONS = [
+  { key: 'interaction_task.task_domain', label: 'Task domain', multi: true, normalize: normalizeTaskDomain },
+  { key: 'human_participants.expertise_level', label: 'Participant expertise', order: ['Low', 'Moderate', 'High', 'Heterogeneous'], normalize: normalizeExpertise },
+  { key: 'interaction_task.ai_role', label: 'AI role', order: ['assistive', 'semi-autonomous', 'autonomous'], normalize: normalizeLower },
+  { key: 'interaction_task.effect_direction', label: 'Effect direction', order: ['positive', 'mixed', 'negative'], normalize: normalizeLower },
+  { key: 'study_type', label: 'Study type', multi: true, order: ['Lab Experiment', 'Field Experiment', 'Randomized Controlled Trial (RCT)', 'Quasi-Experimental', 'Observational Study', 'Other'], normalize: normalizeStudyType },
+  { key: 'ai_model.provider', label: 'AI provider' },
+  { key: 'ai_model.model_name', label: 'AI model' },
+  { key: 'ai_model.fine_tuned', label: 'Fine-tuned', order: ['Yes', 'No'], normalize: normalizeBoolean },
 ];
 
-/** Short labels for wide form headers in the table. */
-const DB_TABLE_LABELS = {
-  'Publication Venue (ex. HBS Working Paper Nature NBER arXiv)': 'Publication Venue',
-  'Describe participant population and relevant background. (ex. Entrepreneurs, MBA students, Software developers, High school students)': 'Population',
-  'Authors (comma-separated)': 'Authors',
-  'Training / Instructions Description': 'Training Description',
-  'Not found in Methods? - human': 'Not found (human)',
-  'Not found in Methods? - model': 'Not found (model)',
-  'Not found in Methods? - task': 'Not found (task)',
-  'Not found in Methods? - results': 'Not found (results)',
-  'What human characteristics may explain outcomes?': 'Human characteristics',
-  'What AI characteristics may explain outcomes?': 'AI characteristics',
-  'What workflow/task features may explain outcomes?': 'Workflow features',
-  'Anything noteworthy or theoretically interesting.': 'Noteworthy',
-  'Evidence of Heterogeneous Effects?': 'Heterogeneous Effects?',
-  'Who Benefited More / Less?': 'Who Benefited',
-  'Author-Proposed Mechanisms': 'Author Mechanisms',
-  'In methods? - Metada': 'In methods? - Metadata',
-};
+const COMPARE_GROUPS = [
+  { title: 'Study', color: '#475569', fields: [
+    { label: 'Year', path: 'year' },
+    { label: 'Study type', path: 'study_type' },
+  ]},
+  { title: 'AI Model', color: '#1e3a5f', fields: [
+    { label: 'Provider', path: 'ai_model.provider' },
+    { label: 'Model name', path: 'ai_model.model_name' },
+    { label: 'Model version', path: 'ai_model.model_version' },
+    { label: 'Fine-tuned', path: 'ai_model.fine_tuned' },
+    { label: 'Access method', path: 'ai_model.access_method' },
+    { label: 'Configuration', path: 'ai_model.prompting_or_config' },
+    { label: 'Key parameters', path: 'ai_model.key_parameters' },
+    { label: 'Benchmarks reported', path: 'ai_model.benchmarks_reported' },
+  ]},
+  { title: 'Human Participants', color: '#0891b2', fields: [
+    { label: 'Sample size (N)', path: 'human_participants.sample_size' },
+    { label: 'Population', path: 'human_participants.population' },
+    { label: 'Expertise level', path: 'human_participants.expertise_level' },
+    { label: 'Domain expertise', path: 'human_participants.domain_expertise' },
+    { label: 'AI familiarity', path: 'human_participants.ai_familiarity' },
+    { label: 'Training provided', path: 'human_participants.training_provided' },
+    { label: 'Data collection period', path: 'human_participants.data_collection_period' },
+  ]},
+  { title: 'Interaction / Task', color: '#059669', fields: [
+    { label: 'Task domain', path: 'interaction_task.task_domain' },
+    { label: 'Interface', path: 'interaction_task.interface' },
+    { label: 'AI role', path: 'interaction_task.ai_role' },
+    { label: 'Task description', path: 'interaction_task.task_description' },
+    { label: 'Experimental conditions', path: 'interaction_task.experimental_conditions' },
+    { label: 'Primary outcomes', path: 'interaction_task.primary_outcomes' },
+    { label: 'Prompting strategy', path: 'interaction_task.prompting_strategy' },
+    { label: 'Effect direction', path: 'interaction_task.effect_direction' },
+    { label: 'Main effects summary', path: 'interaction_task.main_effects_summary' },
+  ]},
+];
 
-// ── Form option lists (mounted into empty containers) ────────────────────────
-const EXPERTISE_LEVELS = ['Low', 'Low to Moderate', 'Moderate', 'Moderate to High', 'High', 'Heterogeneous', 'Not Reported'];
-const FORM_OPTIONS = {
-  methodology: [
-    'Field Experiment', 'Randomized Controlled Trial (RCT)', 'Lab Experiment', 'Survey Experiment',
-    'Observational Study', 'Natural Experiment', 'Case Study', 'Qualitative Study', 'Mixed Methods',
-    'Meta-analysis', 'Review Paper', 'Not Reported',
-  ],
-  human_not_found: ['Sample Size', 'Population', 'Expertise Level', 'Domain Expertise', 'AI Familiarity', 'Training Provided'],
-  provider: ['OpenAI', 'Anthropic', 'Google', 'Microsoft', 'Meta', 'Mistral', 'Open-source', 'Multiple', 'Not Reported', 'Other'],
-  model_type: ['Chatbot', 'Tutor', 'Copilot', 'Agent', 'Workflow Assistant', 'Decision Support System', 'Other'],
-  access_method: [
-    'Chat Interface', 'API', 'IDE Integration', 'Embedded Workflow', 'Web App', 'Mobile App',
-    'Voice Interface', 'Multimodal', 'Not Reported',
-  ],
-  model_not_found: ['Provider', 'Model Name', 'Fine-Tuned', 'Access Method', 'Key Parameters', 'Benchmarks Reported', 'Config/Prompting'],
-  task_domain: [
-    'Software Development', 'Education', 'Healthcare', 'Entrepreneurship', 'Writing', 'Knowledge Work',
-    'Teamwork & Collaboration', 'Customer Service', 'Research', 'Decision-Making', 'Design', 'Marketing',
-    'Operations', 'Finance',
-  ],
-  comparison_conditions: [
-    'No AI', 'AI Only', 'Human + AI', 'Human-only Teams', 'Human-AI Teams',
-    'AI + Process Overview', 'Copilot Enabled', 'Copilot Disabled', 'Other',
-  ],
-  task_not_found: ['Task Domain', 'Task Description', 'AI Role', 'Interaction', 'Comparison Conditions'],
-  outcome_metrics: [
-    'Performance Quality', 'Productivity', 'Accuracy', 'Creativity', 'Learning Outcomes', 'Confidence',
-    'Trust', 'Satisfaction', 'Collaboration Quality', 'Speed / Time', 'Revenue / Business Outcomes',
-    'Retention', 'Self-reported Outcomes',
-  ],
-  results_not_found: [
-    'Outcome Metrics', 'Effect Size', 'Effect Direction', 'Who Benefited', 'Main Effects Summary',
-    'Heterogeneous Effects', 'Mechanisms',
-  ],
-};
+const NEAR_TWIN_FIELDS = [
+  'study_type',
+  'ai_model.provider', 'ai_model.model_name', 'ai_model.model_version',
+  'ai_model.fine_tuned', 'ai_model.access_method',
+  'human_participants.population', 'human_participants.expertise_level',
+  'human_participants.domain_expertise', 'human_participants.ai_familiarity',
+  'human_participants.training_provided',
+  'interaction_task.task_domain', 'interaction_task.interface', 'interaction_task.ai_role',
+  'interaction_task.experimental_conditions', 'interaction_task.primary_outcomes',
+  'interaction_task.prompting_strategy',
+];
 
 // ── Key fields for completeness check ───────────────────────────────────────
 const COMPLETENESS_FIELDS = [
@@ -916,6 +998,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupNavScroll();
   setupFadeIn();
   styleRadios();
+  setupFeatureControls();
   loadCards();
 });
 
@@ -959,12 +1042,16 @@ async function loadCards() {
     populateFilterOptions();
     applyFilters();
     updateHeroStats();
+    refreshFeatureViews();
   } catch (e) {
     document.getElementById('card-grid').innerHTML = `
       <div class="col-span-full bg-red-50 border border-red-200 rounded-xl p-6 text-center">
         <p class="text-red-700 font-medium text-sm">Could not connect to the server.</p>
         <p class="text-red-600 text-xs mt-1">Make sure the server is running: <code class="bg-red-100 px-1 rounded">npm start</code></p>
       </div>`;
+    document.getElementById('design-map-grid').innerHTML = '<div class="text-sm text-red-600 py-8">Could not load cards.</div>';
+    document.getElementById('compare-card-a').textContent = 'Could not load cards.';
+    document.getElementById('compare-card-b').textContent = 'Could not load cards.';
   }
 }
 
@@ -1030,6 +1117,7 @@ async function submitCard() {
     allCards.push(newCard);
     applyFilters();
     updateHeroStats();
+    refreshFeatureViews();
     resetForm();
     showToast('Card submitted successfully!', 'success');
     document.getElementById('browse').scrollIntoView({ behavior: 'smooth' });
@@ -1064,6 +1152,7 @@ async function submitCompletion() {
     const idx = allCards.findIndex(c => c.paper_id === completingCardId);
     if (idx >= 0) allCards[idx] = updated;
     applyFilters();
+    refreshFeatureViews();
     closeModal('complete-modal');
     showToast('Card updated — thank you!', 'success');
   } catch (e) {
@@ -1188,6 +1277,561 @@ function escHtml(s) {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+// ── Design-space map and pairwise comparison ────────────────────────────────
+function normalizeText(value) {
+  if (value === null || value === undefined) return null;
+  const text = String(value).trim();
+  return text || null;
+}
+
+function normalizeLower(value) {
+  const text = normalizeText(value);
+  return text ? text.toLowerCase() : null;
+}
+
+function normalizeExpertise(value) {
+  const text = normalizeText(value);
+  if (!text) return null;
+  const lower = text.toLowerCase();
+  if (lower === 'mixed' || lower === 'heterogeneous') return 'Heterogeneous';
+  if (lower === 'low') return 'Low';
+  if (lower === 'moderate') return 'Moderate';
+  if (lower === 'high') return 'High';
+  return text;
+}
+
+function normalizeTaskDomain(value) {
+  const text = normalizeText(value);
+  if (!text) return null;
+  const key = text.toLowerCase().replace(/\s+/g, ' ');
+  const aliases = {
+    'software': 'Software Development',
+    'software development': 'Software Development',
+    'education': 'Education',
+    'healthcare': 'Healthcare',
+    'entrepreneurship': 'Entrepreneurship',
+    'writing': 'Writing',
+    'knowledge work': 'Knowledge Work',
+    'teamwork & collaboration': 'Teamwork & Collaboration',
+    'teamwork and collaboration': 'Teamwork & Collaboration',
+    'customer service': 'Customer Service',
+    'research': 'Research',
+    'decision-making': 'Decision-Making',
+    'decision making': 'Decision-Making',
+    'design': 'Design',
+    'marketing': 'Marketing',
+    'operations': 'Operations',
+    'finance': 'Finance',
+    'other': 'Other',
+  };
+  return aliases[key] || titleCase(text);
+}
+
+function normalizeStudyType(value) {
+  const text = normalizeText(value);
+  if (!text) return null;
+  const key = text.toLowerCase().replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim();
+  const aliases = {
+    'rct': 'Randomized Controlled Trial (RCT)',
+    'randomized controlled trial': 'Randomized Controlled Trial (RCT)',
+    'randomized controlled trial (rct)': 'Randomized Controlled Trial (RCT)',
+    'field experiment': 'Field Experiment',
+    'lab experiment': 'Lab Experiment',
+    'laboratory experiment': 'Lab Experiment',
+    'survey experiment': 'Survey Experiment',
+    'quasi experimental': 'Quasi-Experimental',
+    'observational': 'Observational Study',
+    'observational study': 'Observational Study',
+    'natural experiment': 'Natural Experiment',
+    'case study': 'Case Study',
+    'qualitative study': 'Qualitative Study',
+    'mixed methods': 'Mixed Methods',
+    'meta analysis': 'Meta-Analysis',
+    'review paper': 'Review Paper',
+    'not reported': 'Not Reported',
+    'other': 'Other',
+  };
+  return aliases[key] || titleCase(text);
+}
+
+function normalizeBoolean(value) {
+  if (value === true || String(value).toLowerCase() === 'true' || String(value).toLowerCase() === 'yes') return 'Yes';
+  if (value === false || String(value).toLowerCase() === 'false' || String(value).toLowerCase() === 'no') return 'No';
+  return null;
+}
+
+function titleCase(value) {
+  return String(value).replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function isMissingValue(value) {
+  return value === null || value === undefined || value === '' || (Array.isArray(value) && value.length === 0);
+}
+
+function normalizeComparisonValue(value) {
+  if (isMissingValue(value)) return null;
+  if (Array.isArray(value)) {
+    return value.map(v => String(v).trim().toLowerCase()).filter(Boolean).sort().join('|');
+  }
+  if (typeof value === 'boolean') return value ? 'true' : 'false';
+  return String(value).trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
+function comparisonValuesEqual(a, b) {
+  return normalizeComparisonValue(a) === normalizeComparisonValue(b);
+}
+
+function displayComparisonValue(value, path) {
+  if (isMissingValue(value)) return '—';
+  if (Array.isArray(value)) return value.join('; ');
+  if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+  if (path === 'human_participants.sample_size' && Number.isFinite(Number(value))) return Number(value).toLocaleString();
+  if (path === 'study_type' || path === 'interaction_task.ai_role' || path === 'interaction_task.effect_direction') return titleCase(value);
+  return String(value);
+}
+
+function setupFeatureControls() {
+  fillMapDimensionSelects();
+
+  document.getElementById('map-y-select').addEventListener('change', e => {
+    mapState.y = e.target.value;
+    mapState.selected = null;
+    syncMapDimensionOptions();
+    renderDesignMap();
+  });
+  document.getElementById('map-x-select').addEventListener('change', e => {
+    mapState.x = e.target.value;
+    mapState.selected = null;
+    syncMapDimensionOptions();
+    renderDesignMap();
+  });
+  document.getElementById('map-swap').addEventListener('click', () => {
+    [mapState.x, mapState.y] = [mapState.y, mapState.x];
+    mapState.selected = null;
+    fillMapDimensionSelects();
+    renderDesignMap();
+  });
+
+  document.getElementById('compare-a-select').addEventListener('change', e => {
+    compareState.a = e.target.value;
+    syncCompareOptions();
+    renderComparison();
+  });
+  document.getElementById('compare-b-select').addEventListener('change', e => {
+    compareState.b = e.target.value;
+    syncCompareOptions();
+    renderComparison();
+  });
+  document.getElementById('compare-highlight').addEventListener('change', e => {
+    compareState.highlight = e.target.checked;
+    renderComparison();
+  });
+  document.getElementById('near-twin-btn').addEventListener('click', selectNearTwin);
+}
+
+function refreshFeatureViews() {
+  fillMapDimensionSelects();
+  fillCompareSelects();
+  renderDesignMap();
+  renderComparison();
+}
+
+function fillMapDimensionSelects() {
+  const fill = (id, selected) => {
+    const select = document.getElementById(id);
+    select.innerHTML = '';
+    MAP_DIMENSIONS.forEach(dim => {
+      const option = document.createElement('option');
+      option.value = dim.key;
+      option.textContent = dim.label;
+      select.appendChild(option);
+    });
+    select.value = selected;
+  };
+  fill('map-y-select', mapState.y);
+  fill('map-x-select', mapState.x);
+  syncMapDimensionOptions();
+}
+
+function syncMapDimensionOptions() {
+  const x = document.getElementById('map-x-select');
+  const y = document.getElementById('map-y-select');
+  [...x.options].forEach(option => option.disabled = option.value === mapState.y);
+  [...y.options].forEach(option => option.disabled = option.value === mapState.x);
+  x.value = mapState.x;
+  y.value = mapState.y;
+}
+
+function getMapDimension(key) {
+  return MAP_DIMENSIONS.find(dim => dim.key === key);
+}
+
+function splitMapValues(value) {
+  if (value === null || value === undefined || value === '') return [];
+  const values = Array.isArray(value) ? value : String(value).split(/[,;|\n]+/);
+  return values.map(normalizeText).filter(Boolean);
+}
+
+function mapDimensionValues(card, dim) {
+  const raw = getField(card, dim.key);
+  const values = dim.multi ? splitMapValues(raw) : [raw];
+  const unique = new Map();
+  values.forEach(value => {
+    const normalized = dim.normalize ? dim.normalize(value) : normalizeText(value);
+    if (normalized !== null) unique.set(mapValueKey(normalized), normalized);
+  });
+  return [...unique.values()];
+}
+
+function mapValueKey(value) {
+  return String(value).trim().toLowerCase();
+}
+
+function getMapValues(dim) {
+  const present = new Map();
+  allCards.forEach(card => {
+    mapDimensionValues(card, dim).forEach(value => present.set(mapValueKey(value), value));
+  });
+
+  const values = [];
+  (dim.order || []).forEach(value => {
+    values.push(value);
+    present.delete(mapValueKey(value));
+  });
+  [...present.values()].sort((a, b) => String(a).localeCompare(String(b), undefined, { numeric: true })).forEach(value => values.push(value));
+  return values;
+}
+
+function formatMapValue(dim, value) {
+  if (dim.key === 'interaction_task.ai_role' || dim.key === 'interaction_task.effect_direction' || dim.key === 'study_type') return titleCase(value);
+  return String(value);
+}
+
+function mapCellColor(count, max) {
+  const t = max ? count / max : 0;
+  const light = [219, 234, 254];
+  const dark = [30, 58, 95];
+  const rgb = light.map((v, i) => Math.round(v + (dark[i] - v) * t));
+  return `rgb(${rgb.join(',')})`;
+}
+
+function renderDesignMap() {
+  const grid = document.getElementById('design-map-grid');
+  const peakEl = document.getElementById('map-peak');
+  const gapEl = document.getElementById('map-gap');
+  const detail = document.getElementById('map-detail');
+
+  if (!allCards.length) {
+    grid.style.gridTemplateColumns = '1fr';
+    grid.innerHTML = '<div class="text-sm text-slate-400 py-8">No cards are available.</div>';
+    peakEl.textContent = 'No cards are available.';
+    gapEl.textContent = 'No cards are available.';
+    detail.innerHTML = '<p class="text-sm text-slate-400">No studies to display.</p>';
+    return;
+  }
+
+  const xDim = getMapDimension(mapState.x);
+  const yDim = getMapDimension(mapState.y);
+  const xs = getMapValues(xDim);
+  const ys = getMapValues(yDim);
+
+  if (!xs.length || !ys.length) {
+    grid.style.gridTemplateColumns = '1fr';
+    grid.innerHTML = '<div class="text-sm text-slate-400 py-8">These dimensions do not have enough reported values to map.</div>';
+    peakEl.textContent = 'No cells can be plotted for these axes.';
+    gapEl.textContent = 'Choose another pair of dimensions.';
+    detail.innerHTML = '<p class="text-sm text-slate-400">Choose another pair of dimensions.</p>';
+    return;
+  }
+
+  const xIndex = new Map(xs.map((value, index) => [mapValueKey(value), index]));
+  const yIndex = new Map(ys.map((value, index) => [mapValueKey(value), index]));
+  const matrix = ys.map(() => xs.map(() => []));
+
+  let plottedCards = 0;
+  allCards.forEach(card => {
+    const xValues = mapDimensionValues(card, xDim);
+    const yValues = mapDimensionValues(card, yDim);
+    if (!xValues.length || !yValues.length) return;
+    plottedCards++;
+    yValues.forEach(yValue => xValues.forEach(xValue => {
+      const xi = xIndex.get(mapValueKey(xValue));
+      const yi = yIndex.get(mapValueKey(yValue));
+      if (xi !== undefined && yi !== undefined) matrix[yi][xi].push(card);
+    }));
+  });
+
+  const rowTotals = matrix.map(row => row.reduce((sum, studies) => sum + studies.length, 0));
+  const colTotals = xs.map((_, xi) => matrix.reduce((sum, row) => sum + row[xi].length, 0));
+  const placements = rowTotals.reduce((sum, value) => sum + value, 0);
+  const max = Math.max(0, ...matrix.flat().map(studies => studies.length));
+  let peak = null;
+  let bestGap = null;
+  let fallbackGap = null;
+
+  grid.style.gridTemplateColumns = `minmax(140px, 180px) repeat(${xs.length}, minmax(72px, 1fr)) 3rem`;
+  const html = [];
+  html.push(`<div class="map-corner">${escHtml(yDim.label)} ↓<br>${escHtml(xDim.label)} →</div>`);
+  xs.forEach(value => html.push(`<div class="map-column-label">${escHtml(formatMapValue(xDim, value))}</div>`));
+  html.push('<div class="map-column-label">Σ</div>');
+
+  ys.forEach((yValue, yi) => {
+    html.push(`<div class="map-row-label">${escHtml(formatMapValue(yDim, yValue))}</div>`);
+    xs.forEach((xValue, xi) => {
+      const studies = matrix[yi][xi];
+      const count = studies.length;
+      if (count > 0) {
+        if (!peak || count > peak.count) peak = { count, xi, yi };
+        const selected = mapState.selected && mapState.selected.x === mapValueKey(xValue) && mapState.selected.y === mapValueKey(yValue);
+        const color = mapCellColor(count, max);
+        const textColor = max && count / max > 0.45 ? '#fff' : '#1e293b';
+        const label = `${count} studies at ${formatMapValue(yDim, yValue)} by ${formatMapValue(xDim, xValue)}`;
+        html.push(`<button type="button" class="map-cell${selected ? ' selected' : ''}" data-map-y="${yi}" data-map-x="${xi}" style="background:${color};color:${textColor}" aria-label="${escHtml(label)}">${count}</button>`);
+      } else {
+        const score = rowTotals[yi] + colTotals[xi];
+        const gap = { score, xi, yi, supported: rowTotals[yi] > 0 && colTotals[xi] > 0 };
+        if (!fallbackGap || score > fallbackGap.score) fallbackGap = gap;
+        if (gap.supported && (!bestGap || score > bestGap.score)) bestGap = gap;
+        html.push('<div class="map-cell empty">GAP</div>');
+      }
+    });
+    html.push(`<div class="map-total">${rowTotals[yi]}</div>`);
+  });
+
+  html.push('<div class="map-corner"></div>');
+  colTotals.forEach(total => html.push(`<div class="map-total">${total}</div>`));
+  html.push(`<div class="map-total">${placements}</div>`);
+  grid.innerHTML = html.join('');
+
+  grid.querySelectorAll('button[data-map-y]').forEach(button => {
+    button.addEventListener('click', () => {
+      const yi = Number(button.dataset.mapY);
+      const xi = Number(button.dataset.mapX);
+      mapState.selected = { y: mapValueKey(ys[yi]), x: mapValueKey(xs[xi]) };
+      renderDesignMap();
+    });
+  });
+
+  if (peak) {
+    peakEl.innerHTML = `<strong>${escHtml(formatMapValue(yDim, ys[peak.yi]))} × ${escHtml(formatMapValue(xDim, xs[peak.xi]))}</strong> contains ${peak.count} card${peak.count === 1 ? '' : 's'}.`;
+  } else {
+    peakEl.textContent = 'No filled cells appear on these axes.';
+  }
+
+  bestGap = bestGap || fallbackGap;
+  if (bestGap) {
+    const yLabel = formatMapValue(yDim, ys[bestGap.yi]);
+    const xLabel = formatMapValue(xDim, xs[bestGap.xi]);
+    const absent = [rowTotals[bestGap.yi] === 0 ? yLabel : null, colTotals[bestGap.xi] === 0 ? xLabel : null].filter(Boolean);
+    gapEl.innerHTML = bestGap.supported
+      ? `<strong>${escHtml(yLabel)} × ${escHtml(xLabel)}</strong> has no studies even though both categories are represented elsewhere.`
+      : `<strong>${escHtml(yLabel)} × ${escHtml(xLabel)}</strong> has no studies; ${absent.map(label => `<strong>${escHtml(label)}</strong>`).join(' and ')} ${absent.length === 1 ? 'is' : 'are'} absent from the current cards.`;
+  } else {
+    gapEl.textContent = 'Every combination on these axes has at least one study.';
+  }
+
+  if (mapState.selected) {
+    const yi = ys.findIndex(value => mapValueKey(value) === mapState.selected.y);
+    const xi = xs.findIndex(value => mapValueKey(value) === mapState.selected.x);
+    if (yi >= 0 && xi >= 0 && matrix[yi][xi].length) {
+      renderMapDetail(yDim, ys[yi], xDim, xs[xi], matrix[yi][xi]);
+      return;
+    }
+  }
+
+  const placementNote = placements === plottedCards ? '' : ` across ${placements} cell placements`;
+  detail.innerHTML = `<p class="text-sm text-slate-400">${plottedCards} of ${allCards.length} cards are represented${placementNote}. Select a filled cell to list its studies.</p>`;
+}
+
+function renderMapDetail(yDim, yValue, xDim, xValue, studies) {
+  const detail = document.getElementById('map-detail');
+  detail.innerHTML = `
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+      <p class="text-sm font-bold text-slate-800">${escHtml(formatMapValue(yDim, yValue))} × ${escHtml(formatMapValue(xDim, xValue))}</p>
+      <span class="text-xs text-slate-400">${studies.length} stud${studies.length === 1 ? 'y' : 'ies'}</span>
+    </div>
+    <div>${studies.map(card => {
+      const effect = effectMeta(card.interaction_task?.effect_direction);
+      return `<button type="button" class="map-study-row" data-paper-id="${card.paper_id}">
+        <span class="map-study-id">#${card.paper_id}</span>
+        <span class="map-study-title">${escHtml(card.paper_title || 'Untitled')}</span>
+        <span class="text-xs px-2 py-0.5 rounded-full font-medium ${effect.badge}">${effect.label}</span>
+      </button>`;
+    }).join('')}</div>`;
+  detail.querySelectorAll('[data-paper-id]').forEach(button => {
+    button.addEventListener('click', () => showCardModal(Number(button.dataset.paperId)));
+  });
+}
+
+function findCardById(id) {
+  return allCards.find(card => String(card.paper_id) === String(id));
+}
+
+function fillCompareSelects() {
+  const aSelect = document.getElementById('compare-a-select');
+  const bSelect = document.getElementById('compare-b-select');
+
+  if (!allCards.length) {
+    aSelect.innerHTML = '<option>No cards available</option>';
+    bSelect.innerHTML = '<option>No cards available</option>';
+    compareState.a = null;
+    compareState.b = null;
+    syncCompareOptions();
+    return;
+  }
+
+  const fill = (select, selected) => {
+    select.innerHTML = '';
+    allCards.forEach(card => {
+      const option = document.createElement('option');
+      option.value = String(card.paper_id);
+      option.textContent = `#${card.paper_id} · ${card.year || 'n.d.'} · ${card.paper_title || 'Untitled'}`;
+      select.appendChild(option);
+    });
+    if (selected !== null) select.value = String(selected);
+  };
+
+  compareState.a = findCardById(compareState.a) ? String(compareState.a) : String(allCards[0].paper_id);
+  if (allCards.length === 1) {
+    compareState.b = null;
+    fill(aSelect, compareState.a);
+    fill(bSelect, null);
+    syncCompareOptions();
+    return;
+  }
+
+  if (!findCardById(compareState.b) || String(compareState.b) === String(compareState.a)) {
+    compareState.b = String(getNearTwin(findCardById(compareState.a)).card.paper_id);
+  }
+
+  fill(aSelect, compareState.a);
+  fill(bSelect, compareState.b);
+  syncCompareOptions();
+}
+
+function syncCompareOptions() {
+  const aSelect = document.getElementById('compare-a-select');
+  const bSelect = document.getElementById('compare-b-select');
+  [...aSelect.options].forEach(option => option.disabled = option.value === String(compareState.b));
+  [...bSelect.options].forEach(option => option.disabled = option.value === String(compareState.a));
+  document.getElementById('near-twin-btn').disabled = allCards.length < 2;
+}
+
+function getNearTwin(source) {
+  if (!source) return null;
+  let best = null;
+
+  allCards.forEach(candidate => {
+    if (candidate.paper_id === source.paper_id) return;
+    let matches = 0;
+    let differences = 0;
+
+    NEAR_TWIN_FIELDS.forEach(path => {
+      const a = getField(source, path);
+      const b = getField(candidate, path);
+      if (isMissingValue(a) || isMissingValue(b)) return;
+      if (comparisonValuesEqual(a, b)) matches++;
+      else differences++;
+    });
+
+    const score = matches - differences * 0.35;
+    const differentEffect = !comparisonValuesEqual(source.interaction_task?.effect_direction, candidate.interaction_task?.effect_direction);
+    if (!best || score > best.score ||
+        (score === best.score && matches > best.matches) ||
+        (score === best.score && matches === best.matches && differentEffect && !best.differentEffect)) {
+      best = { card: candidate, score, matches, differences, differentEffect };
+    }
+  });
+
+  return best;
+}
+
+function selectNearTwin() {
+  const nearest = getNearTwin(findCardById(compareState.a));
+  if (!nearest) return;
+  compareState.b = String(nearest.card.paper_id);
+  fillCompareSelects();
+  renderComparison();
+  showToast(`Nearest study selected (${nearest.matches} matching fields)`, 'success');
+}
+
+function renderComparison() {
+  const a = findCardById(compareState.a);
+  const b = findCardById(compareState.b);
+  const hostA = document.getElementById('compare-card-a');
+  const hostB = document.getElementById('compare-card-b');
+  const summary = document.getElementById('comparison-summary');
+
+  if (!a || !b || a.paper_id === b.paper_id) {
+    hostA.className = 'compare-empty';
+    hostB.className = 'compare-empty';
+    hostA.textContent = allCards.length < 2 ? 'At least two cards are needed for comparison.' : 'Select Study A.';
+    hostB.textContent = allCards.length < 2 ? 'At least two cards are needed for comparison.' : 'Select Study B.';
+    summary.innerHTML = '';
+    return;
+  }
+
+  hostA.className = '';
+  hostB.className = '';
+  hostA.innerHTML = renderComparisonCard(a, b);
+  hostB.innerHTML = renderComparisonCard(b, a);
+  renderComparisonSummary(a, b);
+}
+
+function renderComparisonCard(card, other) {
+  const effect = effectMeta(card.interaction_task?.effect_direction);
+  const authors = Array.isArray(card.authors) ? card.authors.join(', ') : (card.authors || '');
+  const groups = COMPARE_GROUPS.map(group => `
+    <div class="compare-section">
+      <h3 class="compare-section-title" style="color:${group.color}">${group.title}</h3>
+      ${group.fields.map(field => {
+        const value = getField(card, field.path);
+        const otherValue = getField(other, field.path);
+        const state = compareState.highlight ? (comparisonValuesEqual(value, otherValue) ? ' same' : ' diff') : '';
+        return `<div class="compare-field${state}">
+          <div class="compare-label">${field.label}</div>
+          <div class="compare-value">${escHtml(displayComparisonValue(value, field.path))}</div>
+        </div>`;
+      }).join('')}
+    </div>`).join('');
+
+  return `<article class="compare-card">
+    <div class="compare-card-header">
+      <div class="flex flex-wrap items-center gap-1.5 mb-2">
+        <span class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-white font-semibold">#${card.paper_id}</span>
+        <span class="text-xs px-2 py-0.5 rounded-full font-medium ${effect.badge}">${effect.label}</span>
+        ${card.study_type ? `<span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 capitalize">${escHtml(card.study_type)}</span>` : ''}
+      </div>
+      <h3 class="font-bold text-slate-900 text-base leading-snug mb-1">${escHtml(card.paper_title || 'Untitled')}</h3>
+      <p class="text-xs text-slate-500 leading-relaxed">${escHtml(authors)}</p>
+    </div>
+    ${groups}
+  </article>`;
+}
+
+function renderComparisonSummary(a, b) {
+  const fields = COMPARE_GROUPS.flatMap(group => group.fields);
+  const reported = fields.filter(field => !isMissingValue(getField(a, field.path)) || !isMissingValue(getField(b, field.path)));
+  const same = reported.filter(field => comparisonValuesEqual(getField(a, field.path), getField(b, field.path)));
+  const different = reported.filter(field => !comparisonValuesEqual(getField(a, field.path), getField(b, field.path)));
+  const resultPaths = new Set(['interaction_task.effect_direction', 'interaction_task.main_effects_summary']);
+  const designDifferences = different.filter(field => !resultPaths.has(field.path));
+  const nearTwin = designDifferences.length <= 3 && same.length >= 8;
+  const shown = designDifferences.slice(0, 4).map(field => field.label);
+  const extra = designDifferences.length - shown.length;
+  const differenceText = shown.length ? `${shown.join(', ')}${extra > 0 ? `, plus ${extra} more` : ''}` : 'no reported design fields';
+  const effectA = displayComparisonValue(a.interaction_task?.effect_direction, 'interaction_task.effect_direction');
+  const effectB = displayComparisonValue(b.interaction_task?.effect_direction, 'interaction_task.effect_direction');
+  const effectChanged = !comparisonValuesEqual(a.interaction_task?.effect_direction, b.interaction_task?.effect_direction);
+  const summary = document.getElementById('comparison-summary');
+
+  summary.innerHTML = `<div class="rounded-xl border ${nearTwin ? 'border-amber-200 bg-amber-50 text-amber-950' : 'border-slate-200 bg-white text-slate-700'} p-4 text-sm leading-relaxed">
+    <strong>${nearTwin ? 'Near-twin contrast.' : 'Comparison summary.'}</strong>
+    The studies match on <strong>${same.length}</strong> of <strong>${reported.length}</strong> reported fields and differ on ${differenceText}.
+    ${effectChanged ? `Their effect directions also differ: <strong>${escHtml(effectA)}</strong> versus <strong>${escHtml(effectB)}</strong>.` : `Both report a <strong>${escHtml(effectA)}</strong> effect direction.`}
+  </div>`;
 }
 
 function renderBrowse(cards) {
