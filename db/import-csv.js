@@ -3,14 +3,14 @@
  * Import Google Sheets export (CSV) into the cards table.
  *
  * Usage:
- *   node db/import-csv.js                         # import db/sheets-export.csv
+ *   node db/import-csv.js                         # import gitignore/form-responses.csv
  *   node db/import-csv.js path/to/file.csv        # import a specific CSV
  *   node db/import-csv.js --dry-run               # map + print, no DB writes
  *   node db/import-csv.js --update                # upsert: update existing titles
  *
- * Requires DATABASE_URL in .env.local (unless --dry-run).
- * Safe default: insert new titles only; skip titles already in the DB.
- * With --update: overwrite matching paper_title rows with Sheet data.
+ * Requires DATABASE_URL in .env.local or .env (unless --dry-run).
+ * Default CSV lives in gitignore/ (not committed). Safe default: insert new
+ * titles only; skip titles already in the DB. With --update: overwrite matches.
  */
 require('dotenv').config({ path: '.env.local' });
 require('dotenv').config({ path: '.env' });
@@ -24,7 +24,7 @@ const dryRun = args.includes('--dry-run');
 const doUpdate = args.includes('--update');
 const csvArg = args.find((a) => !a.startsWith('--'));
 const csvPath = path.resolve(
-  csvArg || path.join(__dirname, 'sheets-export.csv')
+  csvArg || path.join(__dirname, '..', 'gitignore', 'form-responses.csv')
 );
 
 function clean(v) {
