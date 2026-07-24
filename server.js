@@ -54,42 +54,59 @@ function splitPayload(body) {
 }
 
 const EXTRACTION_PROMPT = `Extract information for an AI Clinical Trial Card from this research paper.
-Return a single valid JSON object with this exact schema (use null for missing information):
+Return a single valid JSON object with this exact schema (use null for missing information).
+Match enum values exactly when possible.
 
 {
+  "study_id": "string or null",
   "paper_title": "string",
+  "paper_url": "string or null",
   "authors": ["array", "of", "full author names"],
   "year": number_or_null,
-  "study_type": "lab experiment | field experiment | randomized controlled trial | observational | quasi-experimental | other",
+  "publication_type": "Peer-reviewed journal | Working paper | Conference paper | Preprint | Book chapter | Unknown | null",
+  "publication_venue": "string or null",
+  "methodology": ["subset of: Field Experiment, Randomized Controlled Trial (RCT), Lab Experiment, Survey Experiment, Observational Study, Natural Experiment, Case Study, Qualitative Study, Mixed Methods, Meta-analysis, Review Paper, Not Reported"],
+  "randomized": "Yes | No | Unclear | null",
   "ai_model": {
-    "provider": "string (e.g., OpenAI, Google, Anthropic, Meta)",
+    "provider": "OpenAI | Anthropic | Google | Microsoft | Meta | Mistral | Open-source | Multiple | Not Reported | string",
     "model_name": "string",
-    "model_version": "string or null",
-    "fine_tuned": true_or_false_or_null,
-    "access_method": "string (e.g., API, ChatGPT web interface, VS Code plugin)",
-    "prompting_or_config": "string describing prompts/configuration, or null",
-    "benchmarks_reported": true_or_false,
-    "key_parameters": "string describing temperature, top-p, system prompt, etc., or null"
+    "model_type": "Chatbot | Tutor | Copilot | Agent | Workflow Assistant | Decision Support System | string | null",
+    "fine_tuned": "Yes | No | Not reported | null",
+    "access_method": ["subset of: Chat Interface, API, IDE Integration, Embedded Workflow, Web App, Mobile App, Voice Interface, Multimodal, Not Reported"],
+    "key_parameters": "string or null",
+    "benchmarks_reported": "Yes | No | Partial | Not Reported | null",
+    "guardrails_present": "Yes | No | Partial | Not Reported | null",
+    "configuration_setup": "string describing guardrails, system prompt, tutor setup, workflow, etc., or null"
   },
   "human_participants": {
     "sample_size": number_or_null,
     "population": "string describing who the participants were",
-    "expertise_level": "Low | Moderate | High | Heterogeneous",
-    "domain_expertise": "string",
-    "ai_familiarity": "string",
-    "training_provided": "string describing any onboarding or training",
+    "expertise_level": "Low | Low to Moderate | Moderate | Moderate to High | High | Heterogeneous | Not Reported | null",
+    "ai_familiarity": "Low | Low to Moderate | Moderate | Moderate to High | High | Heterogeneous | Not Reported | null",
+    "training_provided": "Yes | No | Partial | Unclear | null",
+    "training_description": "string or null",
     "data_collection_period": "string or null"
   },
   "interaction_task": {
-    "task_domain": "string (e.g., Healthcare, Education, Software development)",
+    "task_domain": ["subset of: Software Development, Education, Healthcare, Entrepreneurship, Writing, Knowledge Work, Teamwork & Collaboration, Customer Service, Research, Decision-Making, Design, Marketing, Operations, Finance"],
     "task_description": "string",
-    "interface": "string describing the UI/interface used",
-    "ai_role": "assistive | semi-autonomous | autonomous",
-    "experimental_conditions": ["array of condition names"],
-    "primary_outcomes": ["array of outcome measure names"],
-    "main_effects_summary": "string summarizing the key findings",
-    "effect_direction": "positive | negative | mixed | null",
-    "prompting_strategy": "string (e.g., Zero-shot, Few-shot, Chain-of-thought) or null"
+    "ai_role": "Assistive | Semi-autonomous | Autonomous | null",
+    "interaction_notes": "string on when/how AI was used, reliance, frequency, or null",
+    "comparison_conditions": ["subset of: No AI, AI Only, Human + AI, Human-only Teams, Human-AI Teams, AI + Process Overview, Copilot Enabled, Copilot Disabled, plus other condition names as needed"]
+  },
+  "outcomes": {
+    "outcome_metrics": ["subset of: Performance Quality, Productivity, Accuracy, Creativity, Learning Outcomes, Confidence, Trust, Satisfaction, Collaboration Quality, Speed / Time, Revenue / Business Outcomes, Retention, Self-reported Outcomes"],
+    "effect_size": "string or null",
+    "effect_direction": "Positive | Negative | Null / No Effect | Heterogeneous | Unclear | null",
+    "outcome_standard_error": "string or null",
+    "who_benefited": "string describing who benefited more/less, or null",
+    "main_effects_summary": "string summarizing key findings",
+    "heterogeneous_effects": "Yes | No | null",
+    "author_proposed_mechanisms": "string or null",
+    "human_characteristics_explain": "string or null",
+    "ai_characteristics_explain": "string or null",
+    "workflow_features_explain": "string or null",
+    "noteworthy": "string or null"
   }
 }
 
@@ -101,7 +118,7 @@ app.get('/api/cards', async (req, res) => {
     const rows = await sql`
       SELECT paper_id, paper_title, data, submitted_at, updated_at
       FROM cards
-      WHERE status = 'published'
+      WHERE status IN ('published', 'pending')
       ORDER BY paper_id
     `;
     res.json(rows.map(rowToCard));
@@ -213,12 +230,16 @@ app.patch('/api/cards/:id', async (req, res) => {
       ai_model:           { ...(row.data.ai_model || {}),           ...(updates.ai_model || {}) },
       human_participants: { ...(row.data.human_participants || {}), ...(updates.human_participants || {}) },
       interaction_task:   { ...(row.data.interaction_task || {}),   ...(updates.interaction_task || {}) },
+      outcomes:           { ...(row.data.outcomes || {}),           ...(updates.outcomes || {}) },
     };
     // Keep paper_title and lifecycle columns out of the JSONB blob.
     delete newData.paper_id;
     delete newData.paper_title;
     delete newData.submitted_at;
     delete newData.updated_at;
+    delete newData.created_by;
+    delete newData.status;
+    delete newData.submitted_by;
 
     const newTitle = updates.paper_title || row.paper_title;
 
@@ -246,7 +267,7 @@ app.get('/api/export', async (req, res) => {
     const rows = await sql`
       SELECT paper_id, paper_title, data, submitted_at, updated_at
       FROM cards
-      WHERE status = 'published'
+      WHERE status IN ('published', 'pending')
       ORDER BY paper_id
     `;
     const cards = rows.map(rowToCard);
@@ -254,15 +275,18 @@ app.get('/api/export', async (req, res) => {
 
     if (format === 'csv') {
       const headers = [
-        'paper_id', 'paper_title', 'authors', 'year', 'study_type',
-        'ai_provider', 'ai_model_name', 'ai_version', 'fine_tuned', 'access_method',
-        'prompting_config', 'benchmarks_reported', 'key_parameters',
-        'sample_size', 'population', 'expertise_level', 'domain_expertise',
-        'ai_familiarity', 'training_provided', 'data_collection_period',
-        'task_domain', 'task_description', 'interface', 'ai_role',
-        'experimental_conditions', 'primary_outcomes',
-        'main_effects_summary', 'effect_direction', 'prompting_strategy',
-        'submitted_at', 'updated_at',
+        'study_id', 'paper_id', 'paper_title', 'paper_url', 'authors', 'year',
+        'publication_type', 'publication_venue', 'methodology', 'randomized',
+        'sample_size', 'population', 'expertise_level', 'ai_familiarity',
+        'training_provided', 'training_description', 'data_collection_period',
+        'ai_provider', 'ai_model_name', 'model_type', 'fine_tuned', 'access_method',
+        'key_parameters', 'benchmarks_reported', 'guardrails_present', 'configuration_setup',
+        'task_domain', 'task_description', 'ai_role', 'interaction_notes', 'comparison_conditions',
+        'outcome_metrics', 'effect_size', 'effect_direction', 'outcome_standard_error',
+        'who_benefited', 'main_effects_summary', 'heterogeneous_effects',
+        'author_proposed_mechanisms', 'human_characteristics_explain',
+        'ai_characteristics_explain', 'workflow_features_explain', 'noteworthy',
+        'needs_review', 'coder_name', 'submitted_at', 'updated_at',
       ];
 
       const esc = v => {
@@ -271,24 +295,33 @@ app.get('/api/export', async (req, res) => {
         return `"${s.replace(/"/g, '""')}"`;
       };
 
-      const csvRows = cards.map(c => [
-        c.paper_id,
-        esc(c.paper_title), esc(c.authors), c.year || '', esc(c.study_type),
-        esc(c.ai_model?.provider), esc(c.ai_model?.model_name),
-        esc(c.ai_model?.model_version), c.ai_model?.fine_tuned ?? '',
-        esc(c.ai_model?.access_method), esc(c.ai_model?.prompting_or_config),
-        c.ai_model?.benchmarks_reported ?? '', esc(c.ai_model?.key_parameters),
-        c.human_participants?.sample_size ?? '',
-        esc(c.human_participants?.population), esc(c.human_participants?.expertise_level),
-        esc(c.human_participants?.domain_expertise), esc(c.human_participants?.ai_familiarity),
-        esc(c.human_participants?.training_provided), esc(c.human_participants?.data_collection_period),
-        esc(c.interaction_task?.task_domain), esc(c.interaction_task?.task_description),
-        esc(c.interaction_task?.interface), esc(c.interaction_task?.ai_role),
-        esc(c.interaction_task?.experimental_conditions), esc(c.interaction_task?.primary_outcomes),
-        esc(c.interaction_task?.main_effects_summary), esc(c.interaction_task?.effect_direction),
-        esc(c.interaction_task?.prompting_strategy),
-        esc(c.submitted_at), esc(c.updated_at),
-      ].join(','));
+      const csvRows = cards.map(c => {
+        const o = c.outcomes || {};
+        const t = c.interaction_task || {};
+        const h = c.human_participants || {};
+        const m = c.ai_model || {};
+        return [
+          esc(c.study_id), c.paper_id, esc(c.paper_title), esc(c.paper_url),
+          esc(c.authors), c.year || '', esc(c.publication_type), esc(c.publication_venue),
+          esc(c.methodology), esc(c.randomized),
+          h.sample_size ?? '', esc(h.population), esc(h.expertise_level), esc(h.ai_familiarity),
+          esc(h.training_provided), esc(h.training_description), esc(h.data_collection_period),
+          esc(m.provider), esc(m.model_name), esc(m.model_type), esc(m.fine_tuned),
+          esc(m.access_method), esc(m.key_parameters), esc(m.benchmarks_reported),
+          esc(m.guardrails_present), esc(m.configuration_setup || m.prompting_or_config),
+          esc(t.task_domain), esc(t.task_description), esc(t.ai_role), esc(t.interaction_notes),
+          esc(t.comparison_conditions || t.experimental_conditions),
+          esc(o.outcome_metrics || t.primary_outcomes), esc(o.effect_size),
+          esc(o.effect_direction || t.effect_direction), esc(o.outcome_standard_error),
+          esc(o.who_benefited), esc(o.main_effects_summary || t.main_effects_summary),
+          esc(o.heterogeneous_effects),
+          esc(o.author_proposed_mechanisms || c.author_proposed_mechanisms),
+          esc(o.human_characteristics_explain), esc(o.ai_characteristics_explain),
+          esc(o.workflow_features_explain), esc(o.noteworthy),
+          esc(c.needs_review), esc(c.coder_name),
+          esc(c.submitted_at), esc(c.updated_at),
+        ].join(',');
+      });
 
       const csv = [headers.join(','), ...csvRows].join('\n');
       res.setHeader('Content-Type', 'text/csv');
