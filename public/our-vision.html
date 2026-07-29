@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Our Vision — HAI Clinical Trial Cards</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --navy: #1e3a5f;
+      --blue: #2563eb;
+      --teal: #0891b2;
+    }
+
+    .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    #navbar { transition: box-shadow 0.2s; }
+    #navbar.scrolled { box-shadow: 0 1px 16px rgba(0,0,0,0.1); }
+
+    .hero-gradient { background: linear-gradient(135deg, #1e3a5f 0%, #1d4ed8 60%, #0891b2 100%); }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
+
+    /* ── Doc embed frame ── */
+    .doc-embed-wrap { border: 1px solid #e2e8f0; border-radius: 0.85rem; background: white; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04); overflow: hidden; }
+    .doc-embed-wrap iframe { display: block; width: 100%; height: 85vh; border: 0; }
+  </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800">
+
+<!-- ══════════════════════════════════════════════════════ NAVBAR -->
+<nav id="navbar" class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-15 py-3">
+      <a href="index.html" class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-[#1e3a5f] flex items-center justify-center flex-shrink-0">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="white"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+        </div>
+        <span class="font-bold text-[#1e3a5f] text-base tracking-tight">HAI Clinical Trial Cards</span>
+      </a>
+      <div class="hidden md:flex items-center gap-0.5">
+        <a href="our-vision.html" class="px-2 py-1.5 text-xs lg:text-sm text-[#1e3a5f] bg-slate-50 rounded-md font-semibold transition-colors">Our Vision</a>
+        <a href="index.html#browse" class="px-2 py-1.5 text-xs lg:text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-50 rounded-md font-medium transition-colors">Browse</a>
+        <a href="index.html#design-map" class="px-2 py-1.5 text-xs lg:text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-50 rounded-md font-medium transition-colors">Design Map</a>
+        <a href="index.html#compare" class="px-2 py-1.5 text-xs lg:text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-50 rounded-md font-medium transition-colors">Compare</a>
+        <a href="index.html#browse" class="px-2 py-1.5 text-xs lg:text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-50 rounded-md font-medium transition-colors">Table</a>
+        <a href="index.html#submit" class="px-2 py-1.5 text-xs lg:text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-50 rounded-md font-medium transition-colors">Submit</a>
+        <a href="index.html#submit" class="ml-1 px-3 py-1.5 bg-[#1e3a5f] text-white text-xs lg:text-sm font-semibold rounded-lg hover:bg-[#162d4a] transition-colors">+ Submit Card</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════ HERO -->
+<section id="hero" class="hero-gradient pt-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="max-w-2xl fade-in visible">
+      <span class="text-xs font-bold uppercase tracking-widest text-blue-200 mb-2 block">Position Paper</span>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-3 leading-tight tracking-tight">
+        Our Vision
+      </h1>
+      <p class="text-base text-blue-100 leading-relaxed">
+        What we hope to accomplish with the HAI Clinical Trial Cards initiative — and why standardized reporting matters for human–AI collaboration research.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ DOCUMENT -->
+<section class="py-16 bg-slate-50">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="doc-embed-wrap fade-in visible">
+      <!--
+        TODO: replace this src with your published Google Doc's embed URL.
+        In the doc: File → Share → Publish to web → Embed → Publish,
+        then copy the src="..." URL Google gives you (it ends in /pubhtml or /pub).
+      -->
+      <iframe src="https://docs.google.com/document/d/e/2PACX-1vQZ1XMwGKGEieyA-6szHRYIEuHDUu7HiyzC2aJuoU2XxKG6vGxkeVUq56dn2Y8ABZLeME8LB99Ki7e3/pub?embedded=true"></iframe>
+    </div>
+    <p class="text-xs text-slate-400 mt-3 text-center">
+      Having trouble viewing the document?
+      <a href="https://docs.google.com/document/d/1KZWxYxUHzyXGyMiDj6vsPPN0kzOmslxBg8mcuMiJcm8/edit?usp=sharing" target="_blank" rel="noopener" class="text-[#2563eb] underline">Open it directly in Google Docs</a>.
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ FOOTER -->
+<footer class="bg-[#1e3a5f] text-white py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row justify-between gap-8">
+      <div class="max-w-xs">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-7 h-7 rounded-md bg-white/15 flex items-center justify-center">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="white"><rect x="1" y="1" width="5" height="5" rx="0.75"/><rect x="8" y="1" width="5" height="5" rx="0.75"/><rect x="1" y="8" width="5" height="5" rx="0.75"/><rect x="8" y="8" width="5" height="5" rx="0.75"/></svg>
+          </div>
+          <span class="font-bold text-sm">HAI Clinical Trial Cards</span>
+        </div>
+        <p class="text-blue-200 text-xs leading-relaxed">Standardizing human–AI collaboration research to enable evidence-based governance of AI deployment.</p>
+      </div>
+      <div class="text-xs text-blue-300">
+        <p class="font-semibold text-white mb-2">Inspired by</p>
+        <p>Clinical trial reporting (CONSORT)</p>
+        <p>Preregistration (AsPredicted, OSF)</p>
+        <p>Model Cards (Mitchell et al., 2019)</p>
+        <p>Datasheets for Datasets (Gebru et al., 2021)</p>
+      </div>
+      <div class="text-xs text-blue-300">
+        <p class="font-semibold text-white mb-2">From the paper</p>
+        <p class="italic">"From Patchwork to Progress:</p>
+        <p class="italic">Standardizing the Human–AI</p>
+        <p class="italic">Collaboration Frontier"</p>
+      </div>
+    </div>
+    <div class="border-t border-white/10 mt-8 pt-6 text-xs text-blue-400">
+      Built to support the AICTC research initiative. Data shared for research purposes.
+    </div>
+  </div>
+</footer>
+
+<script>
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 8);
+  });
+</script>
+
+</body>
+</html>
