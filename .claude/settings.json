@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx --no-install playwright --version)",
+      "Bash(lsof -i :3000 -sTCP:LISTEN -n -P)",
+      "Bash(curl -s http://localhost:3000/index.html)"
+    ]
+  }
+}

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Compare — HAI Clinical Trial Cards</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body class="bg-slate-50 text-slate-800">
+
+<!-- ══════════════════════════════════════════════════════ NAVBAR -->
+<nav id="navbar" class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-15 py-3">
+      <a href="index.html" class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-[#1e3a5f] flex items-center justify-center flex-shrink-0">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="white"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+        </div>
+        <span class="brand-mono font-bold text-[#1e3a5f] text-base tracking-tight">HAI Clinical Trial Cards</span>
+      </a>
+      <div class="hidden md:flex items-center gap-1">
+        <a href="our-vision.html" class="px-2 py-1.5 text-xs lg:text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-50 rounded-md font-medium transition-colors">Our Vision</a>
+        <span class="px-2 py-1.5 text-xs lg:text-sm text-slate-400 font-medium cursor-not-allowed" title="Coming soon">Methodology</span>
+        <span class="px-2 py-1.5 text-xs lg:text-sm text-slate-400 font-medium cursor-not-allowed" title="Coming soon">About</span>
+
+        <div class="w-px h-5 bg-slate-200 mx-2"></div>
+
+        <div class="flex items-center gap-0.5 border border-slate-200 rounded-lg p-1">
+          <a href="index.html" class="px-2.5 py-1 text-xs lg:text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-100 rounded-md font-medium transition-colors">Browse</a>
+          <a href="design-map.html" class="px-2.5 py-1 text-xs lg:text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-100 rounded-md font-medium transition-colors">Design Map</a>
+          <a href="compare.html" class="px-2.5 py-1 text-xs lg:text-sm text-[#1e3a5f] bg-slate-100 rounded-md font-semibold transition-colors">Compare</a>
+        </div>
+
+        <a href="submit.html" class="ml-2 px-3 py-1.5 bg-[#1e3a5f] text-white text-xs lg:text-sm font-semibold rounded-lg hover:bg-[#162d4a] transition-colors">+ Submit Card</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════ STATS BAR -->
+<div id="stats-bar" class="bg-[#1e3a5f] pt-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex flex-wrap items-center gap-x-6 gap-y-1">
+    <span class="brand-mono text-[11px] tracking-wide text-blue-200"><span id="stat-total" class="text-white font-bold">—</span> cards coded</span>
+    <span class="w-px h-3 bg-white/15"></span>
+    <span class="brand-mono text-[11px] tracking-wide text-blue-200"><span id="stat-domains" class="text-white font-bold">—</span> task domains</span>
+    <span class="w-px h-3 bg-white/15"></span>
+    <span class="brand-mono text-[11px] tracking-wide text-blue-200"><span id="stat-models" class="text-white font-bold">—</span> AI models</span>
+    <span class="w-px h-3 bg-white/15"></span>
+    <span class="brand-mono text-[11px] tracking-wide text-blue-200"><span id="stat-participants" class="text-white font-bold">—</span> participants studied</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ COMPARE STUDIES -->
+<section id="compare" class="py-20 bg-slate-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mb-8 fade-in">
+      <h2 class="text-3xl font-bold text-slate-900 mb-3">Compare Studies</h2>
+      <p class="text-slate-600 text-sm leading-relaxed">Place two cards side by side. Matching fields fade back while differing fields are highlighted, making consequential design choices easier to isolate. Use the near-twin button to find the study most similar to Study A.</p>
+    </div>
+
+    <div class="feature-controls mb-5 fade-in">
+      <div class="feature-field">
+        <label for="compare-a-select">Study A</label>
+        <select id="compare-a-select" class="inp h-10"></select>
+      </div>
+      <div class="feature-field">
+        <label for="compare-b-select">Study B</label>
+        <select id="compare-b-select" class="inp h-10"></select>
+      </div>
+      <button id="near-twin-btn" type="button" class="feature-action primary" data-tooltip="compare-near-twin">Find A's near-twin</button>
+      <span class="ml-auto inline-flex items-center gap-2 h-10 text-sm font-medium text-slate-600 whitespace-nowrap">
+        <label class="inline-flex items-center gap-2 cursor-pointer">
+          <input id="compare-highlight" type="checkbox" checked class="h-4 w-4 accent-[#1e3a5f]" />
+          Highlight differences
+        </label>
+        <span data-tooltip="compare-highlight"></span>
+      </span>
+    </div>
+
+    <div id="comparison-summary" class="mb-4 fade-in"></div>
+    <div class="comparison-grid fade-in">
+      <div id="compare-card-a" class="compare-empty">Loading studies...</div>
+      <div id="compare-card-b" class="compare-empty">Loading studies...</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ FOOTER -->
+<footer class="bg-[#1e3a5f] text-white py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row justify-between gap-8">
+      <div class="max-w-xs">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-7 h-7 rounded-md bg-white/15 flex items-center justify-center">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="white"><rect x="1" y="1" width="5" height="5" rx="0.75"/><rect x="8" y="1" width="5" height="5" rx="0.75"/><rect x="1" y="8" width="5" height="5" rx="0.75"/><rect x="8" y="8" width="5" height="5" rx="0.75"/></svg>
+          </div>
+          <span class="brand-mono font-bold text-sm">HAI Clinical Trial Cards</span>
+        </div>
+        <p class="text-blue-200 text-xs leading-relaxed">Standardizing human–AI collaboration research to enable evidence-based governance of AI deployment.</p>
+      </div>
+    </div>
+    <div class="border-t border-white/10 mt-8 pt-6 text-xs text-blue-400">
+      Developed by the AI4Life Lab at Harvard University.
+    </div>
+  </div>
+</footer>
+
+<!-- ══════════════════════════════════════════════════════ TOAST -->
+<div id="toast" class="bg-white border border-slate-200 rounded-xl shadow-xl px-4 py-3 flex items-center gap-3 min-w-64">
+  <span id="toast-icon" class="text-lg flex-shrink-0"></span>
+  <p id="toast-msg" class="text-sm font-medium text-slate-700"></p>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ JAVASCRIPT -->
+<script src="js/utils.js"></script>
+<script src="js/data.js"></script>
+<script src="js/filters.js"></script>
+<script src="js/map.js"></script>
+<script src="js/compare.js"></script>
+<script src="js/features.js"></script>
+<script src="js/forms.js"></script>
+<script src="js/modal.js"></script>
+<script src="js/tooltips.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

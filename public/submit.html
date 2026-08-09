@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Submit a Card — HAI Clinical Trial Cards</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body class="bg-slate-50 text-slate-800">
+
+<!-- ══════════════════════════════════════════════════════ NAVBAR -->
+<nav id="navbar" class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-15 py-3">
+      <a href="index.html" class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-[#1e3a5f] flex items-center justify-center flex-shrink-0">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="white"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+        </div>
+        <span class="brand-mono font-bold text-[#1e3a5f] text-base tracking-tight">HAI Clinical Trial Cards</span>
+      </a>
+      <div class="hidden md:flex items-center gap-1">
+        <a href="our-vision.html" class="px-2 py-1.5 text-xs lg:text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-50 rounded-md font-medium transition-colors">Our Vision</a>
+        <span class="px-2 py-1.5 text-xs lg:text-sm text-slate-400 font-medium cursor-not-allowed" title="Coming soon">Methodology</span>
+        <span class="px-2 py-1.5 text-xs lg:text-sm text-slate-400 font-medium cursor-not-allowed" title="Coming soon">About</span>
+
+        <div class="w-px h-5 bg-slate-200 mx-2"></div>
+
+        <div class="flex items-center gap-0.5 border border-slate-200 rounded-lg p-1">
+          <a href="index.html" class="px-2.5 py-1 text-xs lg:text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-100 rounded-md font-medium transition-colors">Browse</a>
+          <a href="design-map.html" class="px-2.5 py-1 text-xs lg:text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-100 rounded-md font-medium transition-colors">Design Map</a>
+          <a href="compare.html" class="px-2.5 py-1 text-xs lg:text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-100 rounded-md font-medium transition-colors">Compare</a>
+        </div>
+
+        <a href="submit.html" class="ml-2 px-3 py-1.5 bg-[#162d4a] text-white text-xs lg:text-sm font-semibold rounded-lg">+ Submit Card</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════ SUBMIT -->
+<section id="submit" class="pt-28 pb-20 bg-white">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-10 fade-in">
+      <h2 class="text-3xl font-bold text-slate-900 mb-3">Submit an HAI Clinical Trial Card</h2>
+      <p class="text-slate-600 text-sm max-w-xl mx-auto">Upload a paper PDF or paste LaTeX source to auto-fill the card using AI, then review and submit. You can also enter details manually.</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex gap-2 mb-6 justify-center fade-in">
+      <button class="tab-btn active" id="tab-pdf" onclick="switchTab('pdf')">Upload PDF</button>
+      <button class="tab-btn" id="tab-text" onclick="switchTab('text')">Paste LaTeX / Text</button>
+      <button class="tab-btn" id="tab-manual" onclick="switchTab('manual')">Manual Entry</button>
+    </div>
+
+    <!-- PDF tab -->
+    <div id="panel-pdf" class="fade-in">
+      <div id="drop-zone" class="drop-zone p-10 text-center cursor-pointer mb-4" onclick="document.getElementById('file-input').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+        <svg class="mx-auto mb-3 text-slate-300" width="40" height="40" viewBox="0 0 40 40" fill="none"><rect x="6" y="2" width="22" height="30" rx="2" stroke="currentColor" stroke-width="2"/><path d="M22 2V10H30" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 20H22M12 25H18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <p class="text-slate-600 font-medium text-sm">Drop a PDF here, or <span class="text-[#2563eb]">click to browse</span></p>
+        <p class="text-xs text-slate-400 mt-1">PDF or .txt / .tex — up to 25 MB</p>
+        <div id="file-name" class="mt-3 text-sm font-medium text-[#1e3a5f] hidden"></div>
+      </div>
+      <input type="file" id="file-input" accept=".pdf,.txt,.tex" class="hidden" onchange="handleFileSelect(this.files[0])" />
+      <button id="parse-btn" onclick="parsePDF()" class="w-full py-2.5 bg-[#1e3a5f] text-white font-semibold rounded-lg hover:bg-[#162d4a] transition-colors text-sm disabled:opacity-50" disabled>
+        Parse with AI
+      </button>
+      <p id="parse-error" class="text-red-600 text-sm mt-2 hidden"></p>
+    </div>
+
+    <!-- Text tab -->
+    <div id="panel-text" class="hidden fade-in">
+      <textarea id="text-input" class="inp h-48 resize-none mb-4 font-mono text-xs" placeholder="Paste LaTeX source or plain text of the paper here..."></textarea>
+      <button onclick="parseText()" class="w-full py-2.5 bg-[#1e3a5f] text-white font-semibold rounded-lg hover:bg-[#162d4a] transition-colors text-sm">
+        Parse with AI
+      </button>
+      <p id="text-parse-error" class="text-red-600 text-sm mt-2 hidden"></p>
+    </div>
+
+    <!-- Manual tab (placeholder shown; same form rendered below always) -->
+    <div id="panel-manual" class="hidden">
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800 mb-4">
+        Fill in the form below manually. Fields marked with * are recommended for meta-analysis inclusion.
+      </div>
+    </div>
+
+    <!-- Parse loading overlay -->
+    <div id="parse-loading" class="hidden text-center py-8">
+      <div class="spin mx-auto mb-3"></div>
+      <p class="text-sm text-slate-500">Extracting card fields with Claude...</p>
+    </div>
+
+    <!-- ── THE FORM (always rendered; shown after parse or in manual mode) ── -->
+    <div id="card-form-wrap" class="mt-6">
+      <div class="bg-green-50 border border-green-200 rounded-lg p-3 mb-5 text-sm text-green-800 hidden" id="parse-success-banner">
+        <span class="font-semibold">Card auto-filled!</span> Review the fields below, correct any errors, then submit.
+      </div>
+
+      <!-- Coding meta -->
+      <div class="bg-slate-50 rounded-xl border border-slate-200 p-5 mb-4">
+        <h3 class="font-bold text-slate-800 text-sm mb-4 uppercase tracking-wide">Coding Meta</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label class="lbl">Study ID *</label>
+            <input id="f-study-id" type="text" class="inp" placeholder="e.g. HAI-001" />
+          </div>
+          <div>
+            <label class="lbl">Coder name</label>
+            <div class="radio-group" id="rg-coder">
+              <label class="radio-opt"><input type="radio" name="coder_name" value="Ciana" /> Ciana</label>
+              <label class="radio-opt"><input type="radio" name="coder_name" value="Loza" /> Loza</label>
+              <label class="radio-opt"><input type="radio" name="coder_name" value="Jenny" /> Jenny</label>
+              <label class="radio-opt"><input type="radio" name="coder_name" value="Hugo" /> Hugo</label>
+            </div>
+          </div>
+          <div>
+            <label class="lbl">Needs review?</label>
+            <div class="radio-group" id="rg-needs-review">
+              <label class="radio-opt"><input type="radio" name="needs_review" value="Yes" /> Yes</label>
+              <label class="radio-opt selected"><input type="radio" name="needs_review" value="No" checked /> No</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Study metadata -->
+      <div class="bg-slate-50 rounded-xl border border-slate-200 p-5 mb-4">
+        <h3 class="font-bold text-slate-800 text-sm mb-4 uppercase tracking-wide">Study Information</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="sm:col-span-2">
+            <label class="lbl">Paper title *</label>
+            <input id="f-title" type="text" class="inp" placeholder="Full paper title" />
+          </div>
+          <div class="sm:col-span-2">
+            <label class="lbl">Paper URL</label>
+            <input id="f-paper-url" type="url" class="inp" placeholder="https://..." />
+          </div>
+          <div class="sm:col-span-2">
+            <label class="lbl">Authors (comma-separated)</label>
+            <input id="f-authors" type="text" class="inp" placeholder="Author One, Author Two, ..." />
+          </div>
+          <div>
+            <label class="lbl">Year</label>
+            <input id="f-year" type="number" class="inp" placeholder="e.g. 2024" min="1990" max="2035" />
+          </div>
+          <div>
+            <label class="lbl">Publication type</label>
+            <select id="f-pub-type" class="inp">
+              <option value="">— select —</option>
+              <option>Peer-reviewed journal</option>
+              <option>Working paper</option>
+              <option>Conference paper</option>
+              <option>Preprint</option>
+              <option>Book chapter</option>
+              <option>Unknown</option>
+            </select>
+          </div>
+          <div class="sm:col-span-2">
+            <label class="lbl">Publication venue</label>
+            <input id="f-venue" type="text" class="inp" placeholder="Journal / conference / repository name" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Methodology -->
+      <div class="bg-amber-50 rounded-xl border border-amber-100 p-5 mb-4">
+        <h3 class="font-bold text-amber-900 text-sm mb-4 uppercase tracking-wide">Methodology</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="sm:col-span-2">
+            <label class="lbl">Methodology</label>
+            <div class="check-grid" id="cg-methodology"></div>
+          </div>
+          <div>
+            <label class="lbl">Data collection period</label>
+            <input id="f-period" type="text" class="inp" placeholder="e.g. Jan 2023 – Mar 2023" />
+          </div>
+          <div>
+            <label class="lbl">Randomized?</label>
+            <div class="radio-group" id="rg-randomized">
+              <label class="radio-opt"><input type="radio" name="randomized" value="Yes" /> Yes</label>
+              <label class="radio-opt"><input type="radio" name="randomized" value="No" /> No</label>
+              <label class="radio-opt"><input type="radio" name="randomized" value="Unclear" /> Unclear</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Human Participants -->
+      <div class="bg-cyan-50 rounded-xl border border-cyan-100 p-5 mb-4">
+        <h3 class="font-bold text-cyan-800 text-sm mb-4 uppercase tracking-wide flex items-center gap-2">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="2.5" stroke="#0891b2" stroke-width="1.5"/><path d="M2.5 12.5C2.5 10.015 4.515 8 7 8C9.485 8 11.5 10.015 11.5 12.5" stroke="#0891b2" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Human Participant Profile
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div><label class="lbl">Sample size (N)</label><input id="f-n" type="number" class="inp" placeholder="e.g. 453" /></div>
+          <div class="sm:col-span-2"><label class="lbl">Population</label><input id="f-population" type="text" class="inp" placeholder="e.g. Practicing physicians, college students, software engineers" /></div>
+          <div>
+            <label class="lbl">Expertise level</label>
+            <div class="radio-group" id="rg-expertise"></div>
+          </div>
+          <div>
+            <label class="lbl">AI familiarity</label>
+            <div class="radio-group" id="rg-ai-familiarity"></div>
+          </div>
+          <div>
+            <label class="lbl">Training provided</label>
+            <div class="radio-group" id="rg-training">
+              <label class="radio-opt"><input type="radio" name="training_provided" value="Yes" /> Yes</label>
+              <label class="radio-opt"><input type="radio" name="training_provided" value="No" /> No</label>
+              <label class="radio-opt"><input type="radio" name="training_provided" value="Partial" /> Partial</label>
+              <label class="radio-opt"><input type="radio" name="training_provided" value="Unclear" /> Unclear</label>
+            </div>
+          </div>
+          <div class="sm:col-span-2"><label class="lbl">Training description</label><textarea id="f-training-desc" class="inp h-16 resize-none" placeholder="Describe any training / onboarding"></textarea></div>
+          <div class="sm:col-span-2">
+            <label class="lbl">Not found in paper (human)</label>
+            <div class="check-grid" id="cg-human-not-found"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Model -->
+      <div class="bg-[#f0f4ff] rounded-xl border border-indigo-100 p-5 mb-4">
+        <h3 class="font-bold text-[#1e3a5f] text-sm mb-4 uppercase tracking-wide flex items-center gap-2">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#1e3a5f" stroke-width="1.5"/><path d="M4.5 7H9.5M7 4.5V9.5" stroke="#1e3a5f" stroke-width="1.5" stroke-linecap="round"/></svg>
+          AI Model Details
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="sm:col-span-2">
+            <label class="lbl">Provider</label>
+            <div class="radio-group" id="rg-provider"></div>
+            <input id="f-provider-other" type="text" class="inp mt-2 hidden" placeholder="Other provider…" />
+          </div>
+          <div><label class="lbl">Model name</label><input id="f-ai-model" type="text" class="inp" placeholder="e.g. GPT-4, Claude 3, Gemini" /></div>
+          <div>
+            <label class="lbl" data-tooltip="form-model-type">Model type</label>
+            <div class="radio-group" id="rg-model-type"></div>
+            <input id="f-model-type-other" type="text" class="inp mt-2 hidden" placeholder="Other model type…" />
+          </div>
+          <div>
+            <label class="lbl">Fine-tuned?</label>
+            <div class="radio-group" id="rg-finetuned">
+              <label class="radio-opt"><input type="radio" name="finetuned" value="Yes" /> Yes</label>
+              <label class="radio-opt"><input type="radio" name="finetuned" value="No" /> No</label>
+              <label class="radio-opt"><input type="radio" name="finetuned" value="Not reported" /> Not reported</label>
+            </div>
+          </div>
+          <div class="sm:col-span-2">
+            <label class="lbl" data-tooltip="form-access-method">Access method</label>
+            <div class="check-grid" id="cg-access"></div>
+          </div>
+          <div class="sm:col-span-2"><label class="lbl">Key parameters</label><input id="f-ai-params" type="text" class="inp" placeholder="Temperature, Top-P, context window, etc." /></div>
+          <div>
+            <label class="lbl" data-tooltip="form-benchmarks">Benchmarks reported?</label>
+            <div class="radio-group" id="rg-benchmarks">
+              <label class="radio-opt"><input type="radio" name="benchmarks" value="Yes" /> Yes</label>
+              <label class="radio-opt"><input type="radio" name="benchmarks" value="No" /> No</label>
+              <label class="radio-opt"><input type="radio" name="benchmarks" value="Partial" /> Partial</label>
+              <label class="radio-opt"><input type="radio" name="benchmarks" value="Not Reported" /> Not Reported</label>
+            </div>
+          </div>
+          <div>
+            <label class="lbl" data-tooltip="form-guardrails">Guardrails present?</label>
+            <div class="radio-group" id="rg-guardrails">
+              <label class="radio-opt"><input type="radio" name="guardrails" value="Yes" /> Yes</label>
+              <label class="radio-opt"><input type="radio" name="guardrails" value="No" /> No</label>
+              <label class="radio-opt"><input type="radio" name="guardrails" value="Partial" /> Partial</label>
+              <label class="radio-opt"><input type="radio" name="guardrails" value="Not Reported" /> Not Reported</label>
+            </div>
+          </div>
+          <div class="sm:col-span-2"><label class="lbl">Configuration / prompting setup</label><textarea id="f-ai-config" class="inp h-16 resize-none" placeholder="System prompt, temperature, sampling parameters, etc."></textarea></div>
+          <div class="sm:col-span-2">
+            <label class="lbl">Not found in paper (model)</label>
+            <div class="check-grid" id="cg-model-not-found"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interaction / Task -->
+      <div class="bg-green-50 rounded-xl border border-green-100 p-5 mb-4">
+        <h3 class="font-bold text-green-800 text-sm mb-4 uppercase tracking-wide flex items-center gap-2">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="3.5" width="8" height="7" rx="1" stroke="#059669" stroke-width="1.5"/><path d="M11 5.5L13.5 7L11 8.5" stroke="#059669" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Interaction &amp; Task Design
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="sm:col-span-2">
+            <label class="lbl">Task domain</label>
+            <div class="check-grid" id="cg-task-domain"></div>
+          </div>
+          <div class="sm:col-span-2"><label class="lbl">Task description</label><textarea id="f-task-desc" class="inp h-16 resize-none" placeholder="Brief description of the task participants performed"></textarea></div>
+          <div>
+            <label class="lbl" data-tooltip="form-ai-role">AI role</label>
+            <div class="radio-group" id="rg-ai-role">
+              <label class="radio-opt"><input type="radio" name="airole" value="Assistive" /> Assistive</label>
+              <label class="radio-opt"><input type="radio" name="airole" value="Semi-autonomous" /> Semi-autonomous</label>
+              <label class="radio-opt"><input type="radio" name="airole" value="Autonomous" /> Autonomous</label>
+            </div>
+          </div>
+          <div class="sm:col-span-2"><label class="lbl">Interaction notes</label><textarea id="f-interaction-notes" class="inp h-16 resize-none" placeholder="How humans interacted with the AI…"></textarea></div>
+          <div class="sm:col-span-2">
+            <label class="lbl" data-tooltip="form-comparison-conditions">Comparison conditions</label>
+            <div class="check-grid" id="cg-comparison"></div>
+            <input id="f-comparison-other" type="text" class="inp mt-2" placeholder="Other condition (free text)" />
+          </div>
+          <div class="sm:col-span-2">
+            <label class="lbl">Not found in paper (task)</label>
+            <div class="check-grid" id="cg-task-not-found"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Outcomes -->
+      <div class="bg-rose-50 rounded-xl border border-rose-100 p-5 mb-4">
+        <h3 class="font-bold text-rose-900 text-sm mb-4 uppercase tracking-wide">Outcomes &amp; Mechanisms</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="sm:col-span-2">
+            <label class="lbl">Outcome metrics</label>
+            <div class="check-grid" id="cg-outcome-metrics"></div>
+          </div>
+          <div>
+            <label class="lbl">Effect direction</label>
+            <div class="radio-group" id="rg-effect">
+              <label class="radio-opt"><input type="radio" name="effect" value="Positive" /> Positive</label>
+              <label class="radio-opt"><input type="radio" name="effect" value="Negative" /> Negative</label>
+              <label class="radio-opt"><input type="radio" name="effect" value="Null / No Effect" /> Null / No Effect</label>
+              <label class="radio-opt"><input type="radio" name="effect" value="Heterogeneous" /> Heterogeneous</label>
+              <label class="radio-opt"><input type="radio" name="effect" value="Unclear" /> Unclear</label>
+            </div>
+          </div>
+          <div><label class="lbl">Effect size</label><input id="f-effect-size" type="text" class="inp" placeholder="e.g. +15%, d=0.4" /></div>
+          <div><label class="lbl">Outcome standard error</label><input id="f-outcome-se" type="text" class="inp" placeholder="SE / CI if reported" /></div>
+          <div><label class="lbl">Who benefited</label><input id="f-who-benefited" type="text" class="inp" placeholder="e.g. novices, high performers" /></div>
+          <div>
+            <label class="lbl" data-tooltip="form-heterogeneous-effects">Heterogeneous effects?</label>
+            <div class="radio-group" id="rg-het-effects">
+              <label class="radio-opt"><input type="radio" name="heterogeneous_effects" value="Yes" /> Yes</label>
+              <label class="radio-opt"><input type="radio" name="heterogeneous_effects" value="No" /> No</label>
+            </div>
+          </div>
+          <div class="sm:col-span-2"><label class="lbl">Main effects summary</label><textarea id="f-effects-summary" class="inp h-16 resize-none" placeholder="Brief plain-language summary of key findings"></textarea></div>
+          <div class="sm:col-span-2">
+            <label class="lbl">Results not found</label>
+            <div class="check-grid" id="cg-results-not-found"></div>
+          </div>
+          <div class="sm:col-span-2"><label class="lbl">Author-proposed mechanisms</label><textarea id="f-mechanisms" class="inp h-16 resize-none" placeholder="How authors explain the effects…"></textarea></div>
+          <div class="sm:col-span-2"><label class="lbl">Human characteristics that explain effects</label><textarea id="f-human-explain" class="inp h-14 resize-none"></textarea></div>
+          <div class="sm:col-span-2"><label class="lbl">AI characteristics that explain effects</label><textarea id="f-ai-explain" class="inp h-14 resize-none"></textarea></div>
+          <div class="sm:col-span-2"><label class="lbl">Workflow features that explain effects</label><textarea id="f-workflow-explain" class="inp h-14 resize-none"></textarea></div>
+          <div class="sm:col-span-2"><label class="lbl">Noteworthy</label><textarea id="f-noteworthy" class="inp h-14 resize-none" placeholder="Anything else notable"></textarea></div>
+        </div>
+      </div>
+
+      <div id="form-error" class="text-red-600 text-sm mb-3 hidden"></div>
+      <button id="submit-btn" onclick="submitCard()" class="w-full py-3 bg-[#1e3a5f] text-white font-bold rounded-xl hover:bg-[#162d4a] transition-colors text-sm tracking-wide shadow">
+        Submit HAI Clinical Trial Card
+      </button>
+      <p class="text-xs text-slate-400 text-center mt-2">Submissions are added to the public database and available for meta-analysis export.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ FOOTER -->
+<footer class="bg-[#1e3a5f] text-white py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row justify-between gap-8">
+      <div class="max-w-xs">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-7 h-7 rounded-md bg-white/15 flex items-center justify-center">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="white"><rect x="1" y="1" width="5" height="5" rx="0.75"/><rect x="8" y="1" width="5" height="5" rx="0.75"/><rect x="1" y="8" width="5" height="5" rx="0.75"/><rect x="8" y="8" width="5" height="5" rx="0.75"/></svg>
+          </div>
+          <span class="brand-mono font-bold text-sm">HAI Clinical Trial Cards</span>
+        </div>
+        <p class="text-blue-200 text-xs leading-relaxed">Standardizing human–AI collaboration research to enable evidence-based governance of AI deployment.</p>
+      </div>
+    </div>
+    <div class="border-t border-white/10 mt-8 pt-6 text-xs text-blue-400">
+      Developed by the AI4Life Lab at Harvard University.
+    </div>
+  </div>
+</footer>
+
+<!-- ══════════════════════════════════════════════════════ TOAST -->
+<div id="toast" class="bg-white border border-slate-200 rounded-xl shadow-xl px-4 py-3 flex items-center gap-3 min-w-64">
+  <span id="toast-icon" class="text-lg flex-shrink-0"></span>
+  <p id="toast-msg" class="text-sm font-medium text-slate-700"></p>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ JAVASCRIPT -->
+<script src="js/utils.js"></script>
+<script src="js/data.js"></script>
+<script src="js/filters.js"></script>
+<script src="js/map.js"></script>
+<script src="js/compare.js"></script>
+<script src="js/features.js"></script>
+<script src="js/forms.js"></script>
+<script src="js/modal.js"></script>
+<script src="js/tooltips.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

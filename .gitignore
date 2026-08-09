@@ -6,3 +6,4 @@ uploads/
 .vercel
 .env*.local
 gitignore/
+db-audit.html
