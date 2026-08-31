@@ -53,55 +53,94 @@ function splitPayload(body) {
   };
 }
 
+// Schema + enums below are transcribed from the coded columns of
+// gitignore/HAI_Studies_Master.csv, the single source of truth for card values
+// (the same vocabularies the front end declares in public/js/utils.js). Keep the
+// two in step: an enum that drifts here writes non-conforming cards straight
+// into the database, where they match no filter and appear as stray design-map
+// rows. Field names mirror what db/import-master-csv.js produces.
 const EXTRACTION_PROMPT = `Extract information for an AI Clinical Trial Card from this research paper.
 Return a single valid JSON object with this exact schema (use null for missing information).
-Match enum values exactly when possible.
+
+Fields marked ENUM must use one of the listed values EXACTLY as written, including
+capitalisation and the em dash (—) where shown. If the paper does not report a
+value, use "Not reported" where the enum offers it, otherwise null. Never invent
+a new category name; a free-text field is provided wherever nuance is needed.
 
 {
   "study_id": "string or null",
   "paper_title": "string",
   "paper_url": "string or null",
+  "doi": "string or null",
   "authors": ["array", "of", "full author names"],
   "year": number_or_null,
-  "publication_type": "Peer-reviewed journal | Working paper | Conference paper | Preprint | Book chapter | Unknown | null",
+  "abstract": "string or null",
+  "publication_type": "ENUM: Peer-reviewed journal | Preprint | Working paper | Conference paper",
   "publication_venue": "string or null",
-  "methodology": ["subset of: Field Experiment, Randomized Controlled Trial (RCT), Lab Experiment, Survey Experiment, Observational Study, Natural Experiment, Case Study, Qualitative Study, Mixed Methods, Meta-analysis, Review Paper, Not Reported"],
-  "randomized": "Yes | No | Unclear | null",
+  "data_collection_period": "string or null",
+  "study_type": "ENUM: Randomized field experiment | Randomized lab/online experiment | Quasi-experiment | Observational study",
+  "randomized": "ENUM: Yes | No",
+  "assignment_mechanism": "ENUM: Individual randomization | Cluster randomization | Within-subject crossover | Staggered rollout (DiD) | Observational — no assignment",
+  "study_setting": "ENUM: In the field | Laboratory | Online panel task | Simulated professional task | Hybrid / multi-study",
+  "unit_of_randomization": "ENUM: Individual | Team or pair | Task or session | Site or cluster | Not randomized",
+  "comparison_type": "string describing the arms, e.g. 'Human-only vs Human + AI'",
+  "application_sector": "ENUM: Cross-sector / general workforce | Healthcare & clinical | Software & IT | Education & tutoring | Marketing, media & creative | Retail, e-commerce & customer service | Professional services & consulting | Financial services & central banking | Legal | Small enterprise & self-employment | Manufacturing & industry | Research & academia | Public sector & government",
+  "location": "country or region, or null",
   "ai_model": {
-    "provider": "OpenAI | Anthropic | Google | Microsoft | Meta | Mistral | Open-source | Multiple | Not Reported | string",
-    "model_name": "string",
-    "model_type": "Chatbot | Tutor | Copilot | Agent | Workflow Assistant | Decision Support System | string | null",
-    "fine_tuned": "Yes | No | Not reported | null",
-    "access_method": ["subset of: Chat Interface, API, IDE Integration, Embedded Workflow, Web App, Mobile App, Voice Interface, Multimodal, Not Reported"],
-    "key_parameters": "string or null",
-    "benchmarks_reported": "Yes | No | Partial | Not Reported | null",
-    "guardrails_present": "Yes | No | Partial | Not Reported | null",
-    "configuration_setup": "string describing guardrails, system prompt, tutor setup, workflow, etc., or null"
+    "provider": "ENUM: OpenAI | Anthropic | Microsoft | Meta | Alibaba | GitHub | Stability AI | Ant Group | micro1 — or the provider's name verbatim if not listed",
+    "model_name": "exact model string as the paper gives it, e.g. 'GPT-4 (gpt-4-0314)'",
+    "model_version": "ENUM: Gen 1 — pre-instruction-tuned | Gen 2 — GPT-3.5 class | Gen 3 — GPT-4 class | Gen 4 — reasoning models | Image generation | Mixed generations | Undisclosed",
+    "model_developer": "string, comma-separated if several",
+    "deployment_vendor": "ENUM: Custom research build | OpenAI first-party (ChatGPT / API) | Third-party vertical product | GitHub Copilot | Microsoft 365 Copilot | Consumer creative tool | Multiple",
+    "model_adaptation": "ENUM: Off-the-shelf, default settings | Prompt-engineered | Retrieval-augmented | Fine-tuned | Purpose-built system | Not reported",
+    "access_method": ["ENUM subset: Chat Interface | Web App | API | IDE Integration | Embedded Workflow | Mobile App | Custom research interface | Not reported"],
+    "model_description": "string or null",
+    "key_parameters": "temperature, context length, seed, etc., or 'Not reported'",
+    "benchmarks_reported": "string or 'Not reported'",
+    "guardrails_present": "ENUM: Yes | No | Not reported",
+    "configuration_setup": "system prompt, tutor setup, workflow scaffolding, or null"
   },
   "human_participants": {
     "sample_size": number_or_null,
+    "sample_size_unit": "the unit counted, e.g. 'participants', 'developers', 'peer reviews'",
     "population": "string describing who the participants were",
-    "expertise_level": "Low | Low to Moderate | Moderate | Moderate to High | High | Heterogeneous | Not Reported | null",
-    "ai_familiarity": "Low | Low to Moderate | Moderate | Moderate to High | High | Heterogeneous | Not Reported | null",
-    "training_provided": "Yes | No | Partial | Unclear | null",
+    "occupation": "string or null",
+    "domain_expertise": "ENUM: Novice | In training | Practitioner | Expert | Mixed by design",
+    "ai_familiarity": "ENUM: Low | Mixed | High | Not Reported",
+    "ai_familiarity_measure": "how familiarity was measured, or null",
+    "training_provided": "ENUM: Yes | No | Instructions only | Unclear | Not reported",
     "training_description": "string or null",
     "data_collection_period": "string or null"
   },
   "interaction_task": {
-    "task_domain": ["subset of: Software Development, Education, Healthcare, Entrepreneurship, Writing, Knowledge Work, Teamwork & Collaboration, Customer Service, Research, Decision-Making, Design, Marketing, Operations, Finance"],
+    "task_domain": ["ENUM subset: Knowledge Work | Writing | Decision-Making | Healthcare | Education | Software Development | Marketing | Operations | Design | Teamwork & Collaboration | Entrepreneurship | Customer Service | Research | Finance"],
+    "task_domain_primary": "ENUM: the single most central value from task_domain",
     "task_description": "string",
-    "ai_role": "Assistive | Semi-autonomous | Autonomous | null",
-    "interaction_notes": "string on when/how AI was used, reliance, frequency, or null",
-    "comparison_conditions": ["subset of: No AI, AI Only, Human + AI, Human-only Teams, Human-AI Teams, AI + Process Overview, Copilot Enabled, Copilot Disabled, plus other condition names as needed"]
+    "ai_role": "ENUM: Assistive | Semi-autonomous | Autonomous",
+    "automation_level": "ENUM: L1 — On-demand tool | L2 — In-workflow suggestion | L3 — Draft generator | L4 — Delegated with sign-off | Varies by arm",
+    "final_output_author": "ENUM: Human | Joint | AI with human approval",
+    "interaction_notes": "when/how AI was used, reliance, frequency, or null",
+    "comparison_conditions": ["the experimental arms, named as the paper names them"]
   },
   "outcomes": {
-    "outcome_metrics": ["subset of: Performance Quality, Productivity, Accuracy, Creativity, Learning Outcomes, Confidence, Trust, Satisfaction, Collaboration Quality, Speed / Time, Revenue / Business Outcomes, Retention, Self-reported Outcomes"],
+    "outcome_metrics": ["ENUM subset: Performance Quality | Productivity | Accuracy | Creativity | Learning Outcomes | Confidence | Trust | Satisfaction | Collaboration Quality | Speed / Time | Revenue / Business Outcomes | Retention | Self-reported Outcomes"],
+    "primary_outcome_family": "ENUM: Output quality | Productivity & speed | Accuracy & error | Creativity & novelty | Learning & skill retention | Perceptions & self-reported experience | Wellbeing & affect | Business & labour-market outcomes",
+    "primary_outcome": "the specific headline outcome measure, e.g. 'Task completion time'",
+    "effect_direction": "ENUM: Positive | Negative | Mixed across primary outcomes | Null — precise | Null — inconclusive | Other. Use 'Null — precise' only when the interval is tight around zero; use 'Null — inconclusive' when the study is underpowered or the interval is wide.",
     "effect_size": "string or null",
-    "effect_direction": "Positive | Negative | Null / No Effect | Heterogeneous | Unclear | null",
+    "estimate": number_or_null,
+    "estimate_type": "ENUM: smd | pct_change | coef | pp | raw_diff | odds_ratio | group_mean | log_points",
+    "units": "string or null",
+    "se": number_or_null,
+    "sd": number_or_null,
+    "ci_low": number_or_null,
+    "ci_high": number_or_null,
+    "p_value": number_or_null,
     "outcome_standard_error": "string or null",
+    "heterogeneous_effects": "ENUM: Yes | No | Not tested / reported",
+    "main_moderator": "the moderator driving heterogeneity, or 'Not reported'",
     "who_benefited": "string describing who benefited more/less, or null",
     "main_effects_summary": "string summarizing key findings",
-    "heterogeneous_effects": "Yes | No | null",
     "author_proposed_mechanisms": "string or null",
     "human_characteristics_explain": "string or null",
     "ai_characteristics_explain": "string or null",
@@ -109,6 +148,9 @@ Match enum values exactly when possible.
     "noteworthy": "string or null"
   }
 }
+
+Report the primary/headline estimate in the outcomes block, and take se, ci_low,
+ci_high and p_value directly from the paper — do not compute or infer them.
 
 Return ONLY valid JSON. No markdown, no explanation, no code blocks.`;
 
@@ -231,9 +273,10 @@ app.get('/api/export', async (req, res) => {
       const headers = [
         'study_id', 'paper_id', 'paper_title', 'paper_url', 'authors', 'year',
         'publication_type', 'publication_venue', 'methodology', 'randomized',
-        'sample_size', 'population', 'expertise_level', 'ai_familiarity',
+        'sample_size', 'sample_size_unit', 'population', 'domain_expertise', 'ai_familiarity',
         'training_provided', 'training_description', 'data_collection_period',
-        'ai_provider', 'ai_model_name', 'model_type', 'fine_tuned', 'access_method',
+        'ai_provider', 'ai_model_name', 'model_version', 'model_developer',
+        'deployment_vendor', 'model_adaptation', 'fine_tuned', 'access_method',
         'key_parameters', 'benchmarks_reported', 'guardrails_present', 'configuration_setup',
         'task_domain', 'task_description', 'ai_role', 'interaction_notes', 'comparison_conditions',
         'outcome_metrics', 'effect_size', 'effect_direction', 'outcome_standard_error',
@@ -258,9 +301,11 @@ app.get('/api/export', async (req, res) => {
           esc(c.study_id), c.paper_id, esc(c.paper_title), esc(c.paper_url),
           esc(c.authors), c.year || '', esc(c.publication_type), esc(c.publication_venue),
           esc(c.methodology), esc(c.randomized),
-          h.sample_size ?? '', esc(h.population), esc(h.expertise_level), esc(h.ai_familiarity),
+          h.sample_size ?? '', esc(h.sample_size_unit), esc(h.population),
+          esc(h.domain_expertise), esc(h.ai_familiarity),
           esc(h.training_provided), esc(h.training_description), esc(h.data_collection_period),
-          esc(m.provider), esc(m.model_name), esc(m.model_type), esc(m.fine_tuned),
+          esc(m.provider), esc(m.model_name), esc(m.model_version), esc(m.model_developer),
+          esc(m.deployment_vendor), esc(m.model_adaptation), esc(m.fine_tuned),
           esc(m.access_method), esc(m.key_parameters), esc(m.benchmarks_reported),
           esc(m.guardrails_present), esc(m.configuration_setup || m.prompting_or_config),
           esc(t.task_domain), esc(t.task_description), esc(t.ai_role), esc(t.interaction_notes),

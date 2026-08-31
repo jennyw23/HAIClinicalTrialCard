@@ -8,12 +8,20 @@ let mapState = { x: 'interaction_task.task_domain', y: 'human_participants.domai
 let compareState = { a: null, b: null, highlight: true };
 
 const MAP_DIMENSIONS = [
-  { key: 'interaction_task.task_domain', label: 'Task domain', multi: true, normalize: normalizeTaskDomain },
-  { key: 'human_participants.domain_expertise', label: 'Domain expertise', order: ['Novice', 'In training', 'Practitioner', 'Expert', 'Mixed by design'] },
-  { key: 'interaction_task.effect_direction', label: 'Effect direction', order: ['positive', 'negative', 'heterogeneous', 'null / no effect', 'unclear'], normalize: normalizeEffect },
-  { key: 'study_type', label: 'Study type', multi: true, order: ['Lab Experiment', 'Field Experiment', 'Randomized Controlled Trial (RCT)', 'Quasi-Experimental', 'Observational Study', 'Other'], normalize: normalizeStudyType },
+  { key: 'interaction_task.task_domain', label: 'Task domain', multi: true, order: TASK_DOMAINS, normalize: normalizeTaskDomain },
+  { key: 'human_participants.domain_expertise', label: 'Domain expertise', order: DOMAIN_EXPERTISE_LEVELS },
+  { key: 'interaction_task.effect_direction', label: 'Effect direction', order: EFFECT_DIRECTIONS, normalize: normalizeEffect },
+  // order comes from STUDY_TYPES (utils.js) so the axis can't drift from the data
+  { key: 'study_type', label: 'Study type', multi: true, order: STUDY_TYPES, normalize: normalizeStudyType },
+  { key: 'study_setting', label: 'Study setting', order: STUDY_SETTINGS },
+  { key: 'human_participants.participant_type', label: 'Participant type', order: PARTICIPANT_TYPES },
+  { key: 'interaction_task.automation_level', label: 'Automation level', order: AUTOMATION_LEVELS },
+  { key: 'outcomes.primary_outcome_family', label: 'Outcome family', order: OUTCOME_FAMILIES },
   { key: 'ai_model.provider', label: 'AI provider' },
-  { key: 'ai_model.model_name', label: 'AI model' },
+  { key: 'ai_model.model_version', label: 'Model generation', order: MODEL_GENERATIONS },
+  // Raw model string: 30 values, 83% of them on a single card. Kept for looking
+  // up a specific model, but 'Model generation' above is the legible axis.
+  { key: 'ai_model.model_name', label: 'AI model (exact)' },
   { key: 'ai_model.fine_tuned', label: 'Fine-tuned', order: ['Yes', 'No'], normalize: normalizeBoolean },
 ];
 
@@ -72,32 +80,39 @@ const NEAR_TWIN_FIELDS = [
 ];
 
 // ── Form option lists (mounted into empty containers) ────────────────────────
-const EXPERTISE_LEVELS = ['Low', 'Low to Moderate', 'Moderate', 'Moderate to High', 'High', 'Heterogeneous', 'Not Reported'];
+// Task-domain expertise and AI familiarity are different scales and now come
+// from their own CSV-derived lists (utils.js). They previously shared one
+// invented Low/Moderate/High list that matched neither CSV column.
 
 const FORM_OPTIONS = {
-  methodology: [
-    'Field Experiment', 'Randomized Controlled Trial (RCT)', 'Lab Experiment', 'Survey Experiment',
-    'Observational Study', 'Natural Experiment', 'Case Study', 'Qualitative Study', 'Mixed Methods',
-    'Meta-analysis', 'Review Paper', 'Not Reported',
-  ],
+  // Same canonical list the map and filters use — forms.js writes the checked
+  // values straight into study_type, so offering the old labels here was what
+  // let retired vocabulary back into the database.
+  methodology: [...STUDY_TYPES, 'Not reported'],
   human_not_found: ['Sample Size', 'Population', 'Expertise Level', 'Domain Expertise', 'AI Familiarity', 'Training Provided'],
-  provider: ['OpenAI', 'Anthropic', 'Google', 'Microsoft', 'Meta', 'Mistral', 'Open-source', 'Multiple', 'Not Reported', 'Other'],
+  // 'Other' reveals the f-provider-other free-text input, so a provider the
+  // corpus hasn't seen yet can still be coded without inventing a fixed option.
+  provider: [...AI_PROVIDERS, 'Not reported', 'Other'],
+  // NOTE: model_type has no column in HAI_Studies_Master.csv, so the master
+  // import never populates it and all current cards leave it empty. The list
+  // below is legacy vocabulary from the retired Google-Form import
+  // (db/import-csv.js 'Model Type'). Left in place rather than deleted because
+  // removing the form field is a product decision, but it is NOT CSV-backed —
+  // the CSV codes this territory as model_adaptation / deployment_vendor instead.
   model_type: ['Chatbot', 'Tutor', 'Copilot', 'Agent', 'Workflow Assistant', 'Decision Support System', 'Other'],
-  access_method: [
-    'Chat Interface', 'API', 'IDE Integration', 'Embedded Workflow', 'Web App', 'Mobile App',
-    'Voice Interface', 'Multimodal', 'Not Reported',
-  ],
+  access_method: ACCESS_METHODS,
   model_not_found: ['Provider', 'Model Name', 'Fine-Tuned', 'Access Method', 'Key Parameters', 'Benchmarks Reported', 'Config/Prompting'],
-  task_domain: [
-    'Software Development', 'Education', 'Healthcare', 'Entrepreneurship', 'Writing', 'Knowledge Work',
-    'Teamwork & Collaboration', 'Customer Service', 'Research', 'Decision-Making', 'Design', 'Marketing',
-    'Operations', 'Finance',
-  ],
+  task_domain: TASK_DOMAINS,
+  // The CSV's comparison_conditions column is free text (papers name their own
+  // arms), so this list is a set of common suggestions rather than a controlled
+  // vocabulary — it is not validated against the sheet.
   comparison_conditions: [
     'No AI', 'AI Only', 'Human + AI', 'Human-only Teams', 'Human-AI Teams',
-    'AI + Process Overview', 'Copilot Enabled', 'Copilot Disabled', 'Other',
+    'Copilot Enabled', 'Copilot Disabled', 'Other',
   ],
   task_not_found: ['Task Domain', 'Task Description', 'AI Role', 'Interaction', 'Comparison Conditions'],
+  // CSV-backed: every value below appears in outcome_metrics_handcoded, which is
+  // a comma-joined list drawn from exactly this vocabulary.
   outcome_metrics: [
     'Performance Quality', 'Productivity', 'Accuracy', 'Creativity', 'Learning Outcomes', 'Confidence',
     'Trust', 'Satisfaction', 'Collaboration Quality', 'Speed / Time', 'Revenue / Business Outcomes',

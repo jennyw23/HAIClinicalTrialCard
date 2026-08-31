@@ -212,6 +212,7 @@ function rowToCard(row) {
       population: get(row, 'participant_population_handcoded'),
       population_normalized: get(row, 'participant_population_normalized_handcoded'),
       occupation: get(row, 'occupation_detailed'),
+      participant_type: get(row, 'participant_type'),
       domain_expertise: get(row, 'domain_expertise'),
       ai_familiarity: get(row, 'ai_familiarity_handcoded'),
       ai_familiarity_measure: get(row, 'ai_familiarity_measure_handcoded'),

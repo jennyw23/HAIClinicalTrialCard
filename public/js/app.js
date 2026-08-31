@@ -40,11 +40,59 @@ function styleRadios() {
   });
 }
 
+// Warns when a loaded card carries a coded value that is absent from the
+// controlled vocabularies in utils.js. Those lists are transcribed from
+// HAI_Studies_Master.csv by hand, so when the sheet gains a value this is what
+// surfaces it — instead of the value silently matching no filter chip and
+// appearing as a stray design-map row.
+function checkVocabularies() {
+  const specs = [
+    ['study_type',                            c => [c.study_type],                                     STUDY_TYPES],
+    ['ai_model.provider',                     c => [c.ai_model?.provider],                             AI_PROVIDERS],
+    ['ai_model.access_method',                c => asList(c.ai_model?.access_method),                  ACCESS_METHODS],
+    ['interaction_task.task_domain',          c => asList(c.interaction_task?.task_domain),            TASK_DOMAINS],
+    ['human_participants.domain_expertise',   c => [c.human_participants?.domain_expertise],           DOMAIN_EXPERTISE_LEVELS],
+    ['interaction_task.effect_direction',     c => [outcomeOf(c, 'effect_direction')],                 EFFECT_DIRECTIONS],
+    ['study_setting',                         c => [c.study_setting],                                  STUDY_SETTINGS],
+    ['interaction_task.automation_level',     c => [c.interaction_task?.automation_level],             AUTOMATION_LEVELS],
+    ['outcomes.primary_outcome_family',       c => [c.outcomes?.primary_outcome_family],               OUTCOME_FAMILIES],
+    ['ai_model.model_version',                c => [c.ai_model?.model_version],                        MODEL_GENERATIONS],
+    ['human_participants.participant_type',   c => [c.human_participants?.participant_type],           PARTICIPANT_TYPES],
+  ];
+  const problems = [];
+  specs.forEach(([label, pick, vocab]) => {
+    const allowed = new Set(vocab.map(v => String(v).toLowerCase()));
+    const unknown = new Map();
+    allCards.forEach(card => {
+      pick(card).forEach(raw => {
+        if (raw === null || raw === undefined || raw === '') return;
+        // 'Not reported' is a valid answer everywhere, not a vocabulary gap
+        const v = String(raw).trim();
+        if (/^not reported$/i.test(v)) return;
+        const norm = label === 'interaction_task.effect_direction' ? normalizeEffect(v) : v;
+        if (!allowed.has(String(norm).toLowerCase())) {
+          unknown.set(norm, (unknown.get(norm) || 0) + 1);
+        }
+      });
+    });
+    if (unknown.size) problems.push({ field: label, values: [...unknown.entries()] });
+  });
+  if (problems.length) {
+    console.warn(
+      '[vocabulary] card values not present in the controlled vocabularies ' +
+      '(utils.js) — update the list from HAI_Studies_Master.csv:',
+      problems
+    );
+  }
+  return problems;
+}
+
 async function loadCards() {
   try {
     const res = await fetch('/api/cards');
     if (!res.ok) throw new Error('Server error');
     allCards = await res.json();
+    checkVocabularies();
     if (document.getElementById('card-grid')) {
       populateFilterOptions();
       applyFilters();

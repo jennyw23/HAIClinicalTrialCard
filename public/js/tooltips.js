@@ -5,7 +5,7 @@
 // icon — no other wiring needed.
 const TOOLTIP_CONTENT = {
   'filter-study-type-primary': 'The study\'s primary design — a randomized field experiment, a randomized lab/online experiment, a quasi-experiment, or an observational study.',
-  'filter-effect-direction': 'The direction of the study\'s reported effect: Positive, Negative, Heterogeneous (varies across outcomes/subgroups), Null / No Effect, or Unclear.',
+  'filter-effect-direction': 'The direction of the study\'s reported effect: Positive, Negative, Mixed across primary outcomes, Null — precise (a tight interval around zero, i.e. a real finding of no effect), Null — inconclusive (underpowered or a wide interval), or Other.',
   'filter-data-collection-period': 'Filter by the year the study\'s data was collected, based on the reported data collection period.',
   'filter-domain-expertise': 'Filter by the task area studied (e.g. Healthcare, Software Development) and the participants\' reported domain expertise.',
   'map-rows': 'Pick the card field plotted down the left side of the grid below.',

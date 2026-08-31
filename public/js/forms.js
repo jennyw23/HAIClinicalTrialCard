@@ -39,8 +39,8 @@ function mountFormOptions() {
   mountCheckGroup('cg-task-not-found', 'task_not_found', FORM_OPTIONS.task_not_found);
   mountCheckGroup('cg-outcome-metrics', 'outcome_metrics', FORM_OPTIONS.outcome_metrics);
   mountCheckGroup('cg-results-not-found', 'results_not_found', FORM_OPTIONS.results_not_found);
-  mountRadioGroup('rg-expertise', 'expertise', EXPERTISE_LEVELS);
-  mountRadioGroup('rg-ai-familiarity', 'ai_familiarity', EXPERTISE_LEVELS);
+  mountRadioGroup('rg-expertise', 'expertise', DOMAIN_EXPERTISE_LEVELS);
+  mountRadioGroup('rg-ai-familiarity', 'ai_familiarity', AI_FAMILIARITY_LEVELS);
 
   // Toggle Other text inputs
   document.querySelectorAll('input[name="provider"]').forEach(inp => {
@@ -152,9 +152,9 @@ function prefillForm(data) {
   const h = data.human_participants || {};
   set('f-n', h.sample_size);
   set('f-population', h.population);
-  setRadio('expertise', h.expertise_level);
-  setRadio('ai_familiarity', h.ai_familiarity);
-  const trainingKnown = ['Yes', 'No', 'Partial', 'Unclear'];
+  setRadio('expertise', h.domain_expertise);
+  setRadio('ai_familiarity', normalizeAiFamiliarity(h.ai_familiarity));
+  const trainingKnown = TRAINING_PROVIDED;
   if (h.training_provided && trainingKnown.includes(h.training_provided)) {
     setRadio('training_provided', h.training_provided);
   } else if (h.training_provided) {
@@ -253,7 +253,7 @@ function gatherFormData() {
     human_participants: {
       sample_size: num('f-n'),
       population: txt('f-population'),
-      expertise_level: getRadio('expertise'),
+      domain_expertise: getRadio('expertise'),
       ai_familiarity: getRadio('ai_familiarity'),
       training_provided: getRadio('training_provided'),
       training_description: txt('f-training-desc'),

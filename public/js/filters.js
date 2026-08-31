@@ -109,14 +109,21 @@ function renderCards(cards) {
   grid.innerHTML = cards.map(cardHTML).join('');
 }
 
+// Badge styling per EFFECT_DIRECTIONS value (utils.js). `label` is the short
+// form shown on a card badge; `value` stays the full CSV string used for filtering.
+const EFFECT_BADGES = {
+  'Positive':                      { badge: 'badge-positive', border: 'border-positive', label: 'Positive' },
+  'Negative':                      { badge: 'badge-negative', border: 'border-negative', label: 'Negative' },
+  'Mixed across primary outcomes': { badge: 'badge-mixed',    border: 'border-mixed',    label: 'Mixed' },
+  'Null — precise':                { badge: 'badge-unknown',  border: 'border-unknown',  label: 'Null (precise)' },
+  'Null — inconclusive':           { badge: 'badge-unknown',  border: 'border-unknown',  label: 'Null (inconclusive)' },
+  'Other':                         { badge: 'badge-unknown',  border: 'border-unknown',  label: 'Other' },
+};
+
 function effectMeta(direction) {
-  const label = normalizeEffect(direction) || 'Unknown';
-  if (label === 'Positive') return { badge: 'badge-positive', border: 'border-positive', label };
-  if (label === 'Negative') return { badge: 'badge-negative', border: 'border-negative', label };
-  if (label === 'Heterogeneous') return { badge: 'badge-mixed', border: 'border-mixed', label };
-  if (label === 'Null / No Effect') return { badge: 'badge-unknown', border: 'border-unknown', label };
-  if (label === 'Unclear') return { badge: 'badge-unknown', border: 'border-unknown', label };
-  return { badge: 'badge-unknown', border: 'border-unknown', label: direction || 'Unknown' };
+  const value = normalizeEffect(direction);
+  return EFFECT_BADGES[value]
+    || { badge: 'badge-unknown', border: 'border-unknown', label: value || direction || 'Unknown' };
 }
 
 function cardHTML(card) {

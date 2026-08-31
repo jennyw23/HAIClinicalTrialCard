@@ -56,7 +56,7 @@ function getMapValues(dim) {
 }
 
 function formatMapValue(dim, value) {
-  if (dim.key === 'interaction_task.effect_direction' || dim.key === 'study_type') return titleCase(value);
+  if (dim.key === 'interaction_task.effect_direction') return titleCase(value);
   return String(value);
 }
 

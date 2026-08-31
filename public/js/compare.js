@@ -136,7 +136,7 @@ function renderComparisonCard(card, other) {
       <div class="flex flex-wrap items-center gap-1.5 mb-2">
         <span class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-white font-semibold">#${card.paper_id}</span>
         <span class="text-xs px-2 py-0.5 rounded-full font-medium ${effect.badge}">${effect.label}</span>
-        ${card.study_type ? `<span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 capitalize">${escHtml(card.study_type)}</span>` : ''}
+        ${card.study_type ? `<span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">${escHtml(normalizeStudyType(card.study_type) || card.study_type)}</span>` : ''}
       </div>
       <h3 class="font-bold text-slate-900 text-base leading-snug mb-1">${escHtml(card.paper_title || 'Untitled')}</h3>
       <p class="text-xs text-slate-500 leading-relaxed">${escHtml(authors)}</p>
