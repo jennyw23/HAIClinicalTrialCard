@@ -140,39 +140,6 @@ async function submitCard() {
   }
 }
 
-async function submitCompletion() {
-  const card = allCards.find(c => c.paper_id === completingCardId);
-  if (!card) return;
-
-  const updates = {};
-  document.querySelectorAll('#complete-form-fields [data-field]').forEach(inp => {
-    const field = inp.getAttribute('data-field');
-    if (inp.value.trim()) {
-      const parts = field.split('.');
-      if (parts.length === 1) updates[field] = inp.value.trim();
-      else {
-        if (!updates[parts[0]]) updates[parts[0]] = {};
-        updates[parts[0]][parts[1]] = inp.value.trim();
-      }
-    }
-  });
-
-  try {
-    const res = await fetch(`/api/cards/${completingCardId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updates) });
-    if (!res.ok) throw new Error((await res.json()).error);
-    const updated = await res.json();
-    const idx = allCards.findIndex(c => c.paper_id === completingCardId);
-    if (idx >= 0) allCards[idx] = updated;
-    applyFilters();
-    refreshFeatureViews();
-    closeModal('complete-modal');
-    showToast('Card updated — thank you!', 'success');
-  } catch (e) {
-    document.getElementById('complete-error').textContent = 'Error: ' + e.message;
-    document.getElementById('complete-error').classList.remove('hidden');
-  }
-}
-
 function exportCards(format) {
   window.location.href = `/api/export?format=${format}`;
 }
@@ -211,19 +178,12 @@ function renderExportSummary() {
 
   const rows = allCards.map(c => {
     const em = effectMeta(outcomeOf(c, 'effect_direction'));
-    const { score } = getCompleteness(c);
     return `<tr class="border-b border-slate-100 hover:bg-slate-50 text-sm">
       <td class="py-2 px-3 font-medium text-slate-800 max-w-48 truncate">${c.paper_title}</td>
       <td class="py-2 px-3 text-slate-500">${c.year || '—'}</td>
       <td class="py-2 px-3"><span class="text-xs px-2 py-0.5 rounded-full font-medium ${em.badge}">${em.label}</span></td>
       <td class="py-2 px-3 text-slate-500">${asList(c.interaction_task?.task_domain).join(', ') || '—'}</td>
       <td class="py-2 px-3 text-slate-500">${c.human_participants?.sample_size?.toLocaleString() || '—'}</td>
-      <td class="py-2 px-3">
-        <div class="flex items-center gap-1.5">
-          <div class="bar-bg w-16"><div class="bar-fill ${score >= 80 ? 'bar-high' : score >= 50 ? 'bar-med' : 'bar-low'}" style="width:${score}%"></div></div>
-          <span class="text-xs text-slate-400">${score}%</span>
-        </div>
-      </td>
     </tr>`;
   }).join('');
 
@@ -242,7 +202,7 @@ function renderExportSummary() {
         <thead class="bg-slate-50">
           <tr class="text-xs font-semibold text-slate-500 uppercase tracking-wide">
             <th class="py-2 px-3">Paper</th><th class="py-2 px-3">Year</th><th class="py-2 px-3">Effect</th>
-            <th class="py-2 px-3">Domain</th><th class="py-2 px-3">N</th><th class="py-2 px-3">Complete</th>
+            <th class="py-2 px-3">Domain</th><th class="py-2 px-3">N</th>
           </tr>
         </thead>
         <tbody>${rows}</tbody>
@@ -261,6 +221,5 @@ function showToast(msg, type = 'success') {
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     closeModal('card-modal');
-    closeModal('complete-modal');
   }
 });

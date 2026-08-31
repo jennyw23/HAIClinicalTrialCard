@@ -4,10 +4,10 @@
 // (called once on DOMContentLoaded) finds every such element and appends the
 // icon — no other wiring needed.
 const TOOLTIP_CONTENT = {
-  'filter-effect': 'Whether the study found the AI helped (Positive), hurt (Negative), had no measurable impact (Null), or had mixed impact across subgroups (Heterogeneous).',
-  'filter-role': 'How much control the AI had: Assistive (human decides), Semi-autonomous (AI recommends, human approves), or Autonomous (AI acts independently).',
-  'filter-expertise': 'The reported skill/experience level of the human participants in the study, from novice to expert.',
-  'filter-domain-study': 'Filter by the task area studied (e.g. Healthcare, Software Development) and by the study design (e.g. RCT, Lab Experiment).',
+  'filter-study-type-primary': 'The study\'s primary design — a randomized field experiment, a randomized lab/online experiment, a quasi-experiment, or an observational study.',
+  'filter-effect-direction': 'The direction of the study\'s reported effect: Positive, Negative, Heterogeneous (varies across outcomes/subgroups), Null / No Effect, or Unclear.',
+  'filter-data-collection-period': 'Filter by the year the study\'s data was collected, based on the reported data collection period.',
+  'filter-domain-expertise': 'Filter by the task area studied (e.g. Healthcare, Software Development) and the participants\' reported domain expertise.',
   'map-rows': 'Pick the card field plotted down the left side of the grid below.',
   'map-columns': 'Pick the card field plotted across the top of the grid below.',
   'compare-near-twin': 'Auto-selects the study most similar to Study A across design fields (model, participants, task) — useful for isolating what one design choice changed.',
@@ -19,6 +19,8 @@ const TOOLTIP_CONTENT = {
   'form-guardrails': 'Whether the study describes safety constraints, content filters, or other guardrails placed on the AI’s behavior.',
   'form-heterogeneous-effects': 'Whether the paper reports the AI’s effect varying meaningfully across subgroups of participants (e.g. novices vs. experts).',
   'form-comparison-conditions': 'The condition(s) the AI-assisted group was compared against (e.g. no-AI control, human-only teams).',
+  'modal-key-parameters': 'Specific settings used to configure the AI model\'s behavior, such as temperature, max tokens, or other decoding parameters.',
+  'modal-estimate-caution': 'Entered by hand during manual coding of the paper. Not automatically kept in sync with the source. Treat as approximate and verify against the paper.',
 };
 
 function mountTooltips() {
@@ -26,13 +28,14 @@ function mountTooltips() {
     const key = el.getAttribute('data-tooltip');
     const text = TOOLTIP_CONTENT[key];
     if (!text || el.querySelector('.tip')) return;
+    const variant = el.getAttribute('data-tooltip-variant');
     const icon = document.createElement('span');
-    icon.className = 'tip';
+    icon.className = variant ? `tip tip-${variant}` : 'tip';
     icon.setAttribute('data-tip-text', text);
     icon.setAttribute('tabindex', '0');
     icon.setAttribute('role', 'note');
     icon.setAttribute('aria-label', text);
-    icon.textContent = '?';
+    icon.textContent = variant === 'warn' ? '!' : '?';
     el.appendChild(icon);
   });
 }

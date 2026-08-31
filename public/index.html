@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Browse — HAI Clinical Trial Cards</title>
+  <title>Browse Cards</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 
@@ -18,14 +19,13 @@
     <div class="flex items-center justify-between h-15 py-3">
       <a href="index.html" class="flex items-center gap-2.5">
         <div class="w-8 h-8 rounded-lg bg-[#1e3a5f] flex items-center justify-center flex-shrink-0">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="white"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+          <svg width="32" height="32" viewBox="0 0 16 16" fill="white"><rect x="2.5" y="2.5" width="7" height="7" rx="1" fill-opacity="0.3"/><rect x="4.5" y="4.5" width="7" height="7" rx="1" fill-opacity="0.6"/><rect x="6.5" y="6.5" width="7" height="7" rx="1"/></svg>
         </div>
-        <span class="brand-mono font-bold text-[#1e3a5f] text-base tracking-tight">HAI Clinical Trial Cards</span>
+        <span class="brand-title text-[#1e3a5f] text-base tracking-tight">HAI Clinical Trial Cards</span>
       </a>
       <div class="hidden md:flex items-center gap-1">
-        <a href="our-vision.html" class="px-2 py-1.5 text-xs lg:text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-50 rounded-md font-medium transition-colors">Our Vision</a>
+        <a href="our-vision.html" class="px-2 py-1.5 text-xs lg:text-sm text-slate-600 hover:text-[#1e3a5f] hover:bg-slate-50 rounded-md font-medium transition-colors">About</a>
         <span class="px-2 py-1.5 text-xs lg:text-sm text-slate-400 font-medium cursor-not-allowed" title="Coming soon">Methodology</span>
-        <span class="px-2 py-1.5 text-xs lg:text-sm text-slate-400 font-medium cursor-not-allowed" title="Coming soon">About</span>
 
         <div class="w-px h-5 bg-slate-200 mx-2"></div>
 
@@ -41,26 +41,16 @@
   </div>
 </nav>
 
-<!-- ══════════════════════════════════════════════════════ STATS BAR -->
-<div id="stats-bar" class="bg-[#1e3a5f] pt-16">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex flex-wrap items-center gap-x-6 gap-y-1">
-    <span class="brand-mono text-[11px] tracking-wide text-blue-200"><span id="stat-total" class="text-white font-bold">—</span> cards coded</span>
-    <span class="w-px h-3 bg-white/15"></span>
-    <span class="brand-mono text-[11px] tracking-wide text-blue-200"><span id="stat-domains" class="text-white font-bold">—</span> task domains</span>
-    <span class="w-px h-3 bg-white/15"></span>
-    <span class="brand-mono text-[11px] tracking-wide text-blue-200"><span id="stat-models" class="text-white font-bold">—</span> AI models</span>
-    <span class="w-px h-3 bg-white/15"></span>
-    <span class="brand-mono text-[11px] tracking-wide text-blue-200"><span id="stat-participants" class="text-white font-bold">—</span> participants studied</span>
-  </div>
-</div>
+<!-- ══════════════════════════════════════════════════════ ACCENT BAR -->
+<div class="hero-gradient h-1.5 mt-16"></div>
 
 <!-- ══════════════════════════════════════════════════════ BROWSE -->
 <section id="browse" class="py-20 bg-slate-50">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 fade-in">
       <div>
-        <h2 class="text-3xl font-bold text-slate-900">Browse HAI Clinical Trial Cards</h2>
-        <p class="text-sm text-slate-500 mt-1">Clean card summaries — open a card for the key fields.</p>
+        <h2 class="text-3xl font-bold text-slate-900">Browse Human-AI Clinical Trial Cards</h2>
+        <p class="text-sm text-slate-500 mt-1">We audit each paper to identify whether it specifies the <b>model</b>, the <b>human</b>, and the <b>experiment</b>.</p>
       </div>
       <div id="results-count" class="text-sm text-slate-500 font-medium"></div>
     </div>
@@ -74,7 +64,6 @@
       <select id="sort-select" class="inp w-auto h-10 pr-8" onchange="applyFilters()">
         <option value="year">Sort: Newest first</option>
         <option value="sample">Sort: Largest sample</option>
-        <option value="complete">Sort: Most complete</option>
         <option value="alpha">Sort: Alphabetical</option>
       </select>
       <button onclick="clearFilters()" class="px-4 h-10 text-sm text-slate-500 border border-slate-200 rounded-lg hover:bg-white hover:border-slate-300 transition-colors whitespace-nowrap">Clear filters</button>
@@ -84,41 +73,42 @@
     <div class="bg-white rounded-xl border border-slate-200 p-4 mb-6 fade-in">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div>
-          <p class="lbl mb-2" data-tooltip="filter-effect">Effect direction</p>
+          <p class="lbl mb-2" data-tooltip="filter-study-type-primary">Study type</p>
           <div class="flex flex-wrap gap-1.5">
-            <button class="chip active" data-filter="effect" data-value="" onclick="setChip(this, 'effect')">All</button>
-            <button class="chip" data-filter="effect" data-value="Positive" onclick="setChip(this, 'effect')">Positive</button>
-            <button class="chip" data-filter="effect" data-value="Negative" onclick="setChip(this, 'effect')">Negative</button>
-            <button class="chip" data-filter="effect" data-value="Null / No Effect" onclick="setChip(this, 'effect')">Null / No Effect</button>
-            <button class="chip" data-filter="effect" data-value="Heterogeneous" onclick="setChip(this, 'effect')">Heterogeneous</button>
+            <button class="chip active" data-filter="studyTypePrimary" data-value="" onclick="setChip(this, 'studyTypePrimary')">All</button>
+            <button class="chip" data-filter="studyTypePrimary" data-value="Randomized field experiment" onclick="setChip(this, 'studyTypePrimary')">Field Experiment</button>
+            <button class="chip" data-filter="studyTypePrimary" data-value="Randomized lab/online experiment" onclick="setChip(this, 'studyTypePrimary')">Lab/Online</button>
+            <button class="chip" data-filter="studyTypePrimary" data-value="Quasi-experiment" onclick="setChip(this, 'studyTypePrimary')">Quasi-Experiment</button>
+            <button class="chip" data-filter="studyTypePrimary" data-value="Observational study" onclick="setChip(this, 'studyTypePrimary')">Observational</button>
           </div>
         </div>
         <div>
-          <p class="lbl mb-2" data-tooltip="filter-role">AI role</p>
+          <p class="lbl mb-2" data-tooltip="filter-effect-direction">Effect direction</p>
           <div class="flex flex-wrap gap-1.5">
-            <button class="chip active" data-filter="role" data-value="" onclick="setChip(this, 'role')">All</button>
-            <button class="chip" data-filter="role" data-value="Assistive" onclick="setChip(this, 'role')">Assistive</button>
-            <button class="chip" data-filter="role" data-value="Semi-autonomous" onclick="setChip(this, 'role')">Semi-autonomous</button>
-            <button class="chip" data-filter="role" data-value="Autonomous" onclick="setChip(this, 'role')">Autonomous</button>
+            <button class="chip active" data-filter="effectDirection" data-value="" onclick="setChip(this, 'effectDirection')">All</button>
+            <button class="chip" data-filter="effectDirection" data-value="Positive" onclick="setChip(this, 'effectDirection')">Positive</button>
+            <button class="chip" data-filter="effectDirection" data-value="Negative" onclick="setChip(this, 'effectDirection')">Negative</button>
+            <button class="chip" data-filter="effectDirection" data-value="Heterogeneous" onclick="setChip(this, 'effectDirection')">Heterogeneous</button>
+            <button class="chip" data-filter="effectDirection" data-value="Null / No Effect" onclick="setChip(this, 'effectDirection')">Null / No Effect</button>
+            <button class="chip" data-filter="effectDirection" data-value="Unclear" onclick="setChip(this, 'effectDirection')">Unclear</button>
           </div>
         </div>
         <div>
-          <p class="lbl mb-2" data-tooltip="filter-expertise">Expertise level</p>
-          <div class="flex flex-wrap gap-1.5">
-            <button class="chip active" data-filter="expertise" data-value="" onclick="setChip(this, 'expertise')">All</button>
-            <button class="chip" data-filter="expertise" data-value="Low" onclick="setChip(this, 'expertise')">Low</button>
-            <button class="chip" data-filter="expertise" data-value="Low to Moderate" onclick="setChip(this, 'expertise')">Low–Mod</button>
-            <button class="chip" data-filter="expertise" data-value="Moderate" onclick="setChip(this, 'expertise')">Moderate</button>
-            <button class="chip" data-filter="expertise" data-value="Moderate to High" onclick="setChip(this, 'expertise')">Mod–High</button>
-            <button class="chip" data-filter="expertise" data-value="High" onclick="setChip(this, 'expertise')">High</button>
-            <button class="chip" data-filter="expertise" data-value="Heterogeneous" onclick="setChip(this, 'expertise')">Heterogeneous</button>
+          <p class="lbl mb-2" data-tooltip="filter-data-collection-period">Data collection period</p>
+          <div class="pt-1">
+            <p class="text-xs font-semibold text-[#1e3a5f] mb-2"><span id="filter-period-label">All years</span></p>
+            <input type="range" id="filter-period-slider" min="0" max="0" step="1" value="0" class="w-full accent-[#1e3a5f]" oninput="onPeriodSliderInput()" />
+            <div class="flex justify-between text-[10px] text-slate-400 mt-1">
+              <span>All</span>
+              <span id="filter-period-max"></span>
+            </div>
           </div>
         </div>
         <div>
-          <p class="lbl mb-2" data-tooltip="filter-domain-study">Domain &amp; study type</p>
+          <p class="lbl mb-2" data-tooltip="filter-domain-expertise">Domain &amp; expertise</p>
           <div class="flex flex-wrap gap-1.5">
             <select id="filter-domain" class="inp h-8 text-xs py-0 px-2" onchange="applyFilters()"><option value="">All domains</option></select>
-            <select id="filter-study" class="inp h-8 text-xs py-0 px-2 mt-1.5" onchange="applyFilters()"><option value="">All study types</option></select>
+            <select id="filter-domain-expertise" class="inp h-8 text-xs py-0 px-2 mt-1.5" onchange="applyFilters()"><option value="">All expertise levels</option></select>
           </div>
         </div>
       </div>
@@ -141,11 +131,10 @@
       <div class="max-w-xs">
         <div class="flex items-center gap-2 mb-3">
           <div class="w-7 h-7 rounded-md bg-white/15 flex items-center justify-center">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="white"><rect x="1" y="1" width="5" height="5" rx="0.75"/><rect x="8" y="1" width="5" height="5" rx="0.75"/><rect x="1" y="8" width="5" height="5" rx="0.75"/><rect x="8" y="8" width="5" height="5" rx="0.75"/></svg>
+            <svg width="28" height="28" viewBox="0 0 14 14" fill="white"><rect x="2.5" y="2.5" width="6" height="6" rx="1" fill-opacity="0.3"/><rect x="4" y="4" width="6" height="6" rx="1" fill-opacity="0.6"/><rect x="5.5" y="5.5" width="6" height="6" rx="1"/></svg>
           </div>
-          <span class="brand-mono font-bold text-sm">HAI Clinical Trial Cards</span>
+          <span class="brand-title text-sm">HAI Clinical Trial Cards</span>
         </div>
-        <p class="text-blue-200 text-xs leading-relaxed">Standardizing human–AI collaboration research to enable evidence-based governance of AI deployment.</p>
       </div>
     </div>
     <div class="border-t border-white/10 mt-8 pt-6 text-xs text-blue-400">
@@ -158,24 +147,6 @@
 <div id="card-modal" class="modal-wrap" onclick="if(event.target===this) closeModal('card-modal')">
   <div class="modal-box my-8">
     <div id="modal-content" class="p-6 sm:p-8"></div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════════════════ COMPLETE CARD MODAL -->
-<div id="complete-modal" class="modal-wrap" onclick="if(event.target===this) closeModal('complete-modal')">
-  <div class="modal-box my-8 max-w-lg">
-    <div class="p-6">
-      <div class="flex justify-between items-start mb-4">
-        <h3 class="font-bold text-slate-900">Complete Missing Fields</h3>
-        <button onclick="closeModal('complete-modal')" class="text-slate-400 hover:text-slate-600 text-xl leading-none">&times;</button>
-      </div>
-      <p class="text-sm text-slate-600 mb-5">Help improve this card by filling in the missing fields below. Co-authors and reviewers are encouraged to complete cards for published studies.</p>
-      <div id="complete-form-fields" class="space-y-4 mb-5"></div>
-      <div id="complete-error" class="text-red-600 text-sm mb-3 hidden"></div>
-      <button onclick="submitCompletion()" class="w-full py-2.5 bg-[#1e3a5f] text-white font-semibold rounded-lg hover:bg-[#162d4a] transition-colors text-sm">
-        Submit Missing Fields
-      </button>
-    </div>
   </div>
 </div>
 

@@ -56,7 +56,7 @@ function getMapValues(dim) {
 }
 
 function formatMapValue(dim, value) {
-  if (dim.key === 'interaction_task.ai_role' || dim.key === 'interaction_task.effect_direction' || dim.key === 'study_type') return titleCase(value);
+  if (dim.key === 'interaction_task.effect_direction' || dim.key === 'study_type') return titleCase(value);
   return String(value);
 }
 
@@ -71,15 +71,11 @@ function mapCellColor(count, max) {
 
 function renderDesignMap() {
   const grid = document.getElementById('design-map-grid');
-  const peakEl = document.getElementById('map-peak');
-  const gapEl = document.getElementById('map-gap');
   const detail = document.getElementById('map-detail');
 
   if (!allCards.length) {
     grid.style.gridTemplateColumns = '1fr';
     grid.innerHTML = '<div class="text-sm text-slate-400 py-8">No cards are available.</div>';
-    peakEl.textContent = 'No cards are available.';
-    gapEl.textContent = 'No cards are available.';
     detail.innerHTML = '<p class="text-sm text-slate-400">No studies to display.</p>';
     return;
   }
@@ -92,8 +88,6 @@ function renderDesignMap() {
   if (!xs.length || !ys.length) {
     grid.style.gridTemplateColumns = '1fr';
     grid.innerHTML = '<div class="text-sm text-slate-400 py-8">These dimensions do not have enough reported values to map.</div>';
-    peakEl.textContent = 'No cells can be plotted for these axes.';
-    gapEl.textContent = 'Choose another pair of dimensions.';
     detail.innerHTML = '<p class="text-sm text-slate-400">Choose another pair of dimensions.</p>';
     return;
   }
@@ -119,9 +113,6 @@ function renderDesignMap() {
   const colTotals = xs.map((_, xi) => matrix.reduce((sum, row) => sum + row[xi].length, 0));
   const placements = rowTotals.reduce((sum, value) => sum + value, 0);
   const max = Math.max(0, ...matrix.flat().map(studies => studies.length));
-  let peak = null;
-  let bestGap = null;
-  let fallbackGap = null;
 
   grid.style.gridTemplateColumns = `minmax(140px, 180px) repeat(${xs.length}, minmax(72px, 1fr)) 3rem`;
   const html = [];
@@ -135,17 +126,12 @@ function renderDesignMap() {
       const studies = matrix[yi][xi];
       const count = studies.length;
       if (count > 0) {
-        if (!peak || count > peak.count) peak = { count, xi, yi };
         const selected = mapState.selected && mapState.selected.x === mapValueKey(xValue) && mapState.selected.y === mapValueKey(yValue);
         const color = mapCellColor(count, max);
         const textColor = max && count / max > 0.45 ? '#fff' : '#1e293b';
         const label = `${count} studies at ${formatMapValue(yDim, yValue)} by ${formatMapValue(xDim, xValue)}`;
         html.push(`<button type="button" class="map-cell${selected ? ' selected' : ''}" data-map-y="${yi}" data-map-x="${xi}" style="background:${color};color:${textColor}" aria-label="${escHtml(label)}">${count}</button>`);
       } else {
-        const score = rowTotals[yi] + colTotals[xi];
-        const gap = { score, xi, yi, supported: rowTotals[yi] > 0 && colTotals[xi] > 0 };
-        if (!fallbackGap || score > fallbackGap.score) fallbackGap = gap;
-        if (gap.supported && (!bestGap || score > bestGap.score)) bestGap = gap;
         html.push('<div class="map-cell empty">GAP</div>');
       }
     });
@@ -166,24 +152,6 @@ function renderDesignMap() {
     });
   });
 
-  if (peak) {
-    peakEl.innerHTML = `<strong>${escHtml(formatMapValue(yDim, ys[peak.yi]))} × ${escHtml(formatMapValue(xDim, xs[peak.xi]))}</strong> contains ${peak.count} card${peak.count === 1 ? '' : 's'}.`;
-  } else {
-    peakEl.textContent = 'No filled cells appear on these axes.';
-  }
-
-  bestGap = bestGap || fallbackGap;
-  if (bestGap) {
-    const yLabel = formatMapValue(yDim, ys[bestGap.yi]);
-    const xLabel = formatMapValue(xDim, xs[bestGap.xi]);
-    const absent = [rowTotals[bestGap.yi] === 0 ? yLabel : null, colTotals[bestGap.xi] === 0 ? xLabel : null].filter(Boolean);
-    gapEl.innerHTML = bestGap.supported
-      ? `<strong>${escHtml(yLabel)} × ${escHtml(xLabel)}</strong> has no studies even though both categories are represented elsewhere.`
-      : `<strong>${escHtml(yLabel)} × ${escHtml(xLabel)}</strong> has no studies; ${absent.map(label => `<strong>${escHtml(label)}</strong>`).join(' and ')} ${absent.length === 1 ? 'is' : 'are'} absent from the current cards.`;
-  } else {
-    gapEl.textContent = 'Every combination on these axes has at least one study.';
-  }
-
   if (mapState.selected) {
     const yi = ys.findIndex(value => mapValueKey(value) === mapState.selected.y);
     const xi = xs.findIndex(value => mapValueKey(value) === mapState.selected.x);
@@ -201,7 +169,7 @@ function renderMapDetail(yDim, yValue, xDim, xValue, studies) {
   const detail = document.getElementById('map-detail');
   detail.innerHTML = `
     <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
-      <p class="text-sm font-bold text-slate-800">${escHtml(formatMapValue(yDim, yValue))} × ${escHtml(formatMapValue(xDim, xValue))}</p>
+      <p class="text-sm font-bold text-slate-800">${escHtml(yDim.label)}: ${escHtml(formatMapValue(yDim, yValue))} × ${escHtml(xDim.label)}: ${escHtml(formatMapValue(xDim, xValue))}</p>
       <span class="text-xs text-slate-400">${studies.length} stud${studies.length === 1 ? 'y' : 'ies'}</span>
     </div>
     <div>${studies.map(card => {

@@ -215,52 +215,6 @@ app.post('/api/cards', async (req, res) => {
   }
 });
 
-// ── PATCH update existing card (for completing missing fields) ───────────────
-app.patch('/api/cards/:id', async (req, res) => {
-  try {
-    const id = parseInt(req.params.id);
-    const existing = await sql`SELECT * FROM cards WHERE paper_id = ${id}`;
-    if (!existing.length) return res.status(404).json({ error: 'Card not found' });
-
-    const row = existing[0];
-    const updates = req.body;
-    const newData = {
-      ...row.data,
-      ...updates,
-      ai_model:           { ...(row.data.ai_model || {}),           ...(updates.ai_model || {}) },
-      human_participants: { ...(row.data.human_participants || {}), ...(updates.human_participants || {}) },
-      interaction_task:   { ...(row.data.interaction_task || {}),   ...(updates.interaction_task || {}) },
-      outcomes:           { ...(row.data.outcomes || {}),           ...(updates.outcomes || {}) },
-    };
-    // Keep paper_title and lifecycle columns out of the JSONB blob.
-    delete newData.paper_id;
-    delete newData.paper_title;
-    delete newData.submitted_at;
-    delete newData.updated_at;
-    delete newData.created_by;
-    delete newData.status;
-    delete newData.submitted_by;
-
-    const newTitle = updates.paper_title || row.paper_title;
-
-    const [updateRows] = await sql.transaction([
-      sql`UPDATE cards
-            SET paper_title = ${newTitle},
-                data        = ${JSON.stringify(newData)}::jsonb,
-                updated_at  = NOW()
-          WHERE paper_id = ${id}
-          RETURNING paper_id, paper_title, data, submitted_at, updated_at`,
-      sql`INSERT INTO card_edits (paper_id, changes)
-          VALUES (${id}, ${JSON.stringify(updates)}::jsonb)`,
-    ]);
-
-    res.json(rowToCard(updateRows[0]));
-  } catch (err) {
-    console.error('PATCH /api/cards/:id:', err.message);
-    res.status(500).json({ error: err.message });
-  }
-});
-
 // ── GET export cards as JSON or CSV ─────────────────────────────────────────
 app.get('/api/export', async (req, res) => {
   try {

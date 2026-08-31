@@ -131,18 +131,23 @@ function displayComparisonValue(value, path) {
   if (Array.isArray(value)) return value.join('; ');
   if (typeof value === 'boolean') return value ? 'Yes' : 'No';
   if (path === 'human_participants.sample_size' && Number.isFinite(Number(value))) return Number(value).toLocaleString();
-  if (path === 'study_type' || path === 'interaction_task.ai_role' || path === 'interaction_task.effect_direction') return titleCase(value);
+  if (path === 'interaction_task.effect_direction') return normalizeEffect(value) || titleCase(value);
+  if (path === 'study_type' || path === 'interaction_task.ai_role') return titleCase(value);
   return String(value);
 }
 
 function normalizeEffect(dir) {
   if (dir == null || dir === '') return '';
   const d = String(dir).toLowerCase().trim();
+  // The audited effect_direction column uses full descriptive phrases per
+  // study (e.g. "Mixed across primary outcomes", "Null — inconclusive"), not
+  // a fixed short vocabulary — match by substring, not exact equality, or
+  // most rows silently fail to bucket into any of the five filter chips.
   if (d === 'positive') return 'Positive';
   if (d === 'negative') return 'Negative';
-  if (d === 'heterogeneous' || d === 'mixed') return 'Heterogeneous';
+  if (d.includes('heterogeneous') || d.includes('mixed')) return 'Heterogeneous';
   if (d.includes('null') || d.includes('no effect')) return 'Null / No Effect';
-  if (d === 'unclear' || d === 'unknown') return 'Unclear';
+  if (d === 'unclear' || d === 'unknown' || d === 'other') return 'Unclear';
   return String(dir);
 }
 
